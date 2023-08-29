@@ -1,6 +1,5 @@
-# Import and initialize the pygame library
-import pygame
-import board
+# Import library
+import pygame, import board
 
 # initiate
 pygame.init()
@@ -35,11 +34,17 @@ winnerText = pygame.font.SysFont('Arial', 70)
 
 # draw board
 def drawBoard():
+    # display the cording
+    chars = 'abcdefg'
+    for i, char in enumerate(chars):
+        screen.blit(smallText.render(char, True, (0, 0, 0)), (195 + 67 * i, 465))
+        screen.blit(smallText.render(str(i + 1), True, (0, 0, 0)), (175, 445 - 67 * i))
+
     # display choice of mode
     if HumanMode:
         screen.blit(largeText.render("Human Vs Human", True, (0, 0, 0)), (260, 3))
     elif AiMode:
-        screen.blit(largeText.render("Human Vs AI", True, (0, 0, 0)), (270, 3))
+        screen.blit(largeText.render("Human Vs Computer", True, (0, 0, 0)), (260, 3))
     else:
         screen.blit(largeText.render("Choose A Mode", True, (0, 0, 0)), (280, 3))
 
@@ -118,22 +123,31 @@ def drawBoard():
                 pygame.draw.circle(screen, (0, 255, 0), (x, y), CircleSIZE + 5, 3)
 
 
+# emd button
+def end_button(pos):
+    if 20 + 30 > pos[0] > 20 and 10 + 30 > pos[1] > 10:
+        pygame.draw.rect(screen, (60, 60, 60), (20, 10, 30, 30))
+    else:
+        pygame.draw.rect(screen, (30, 30, 30), (20, 10, 30, 30))
+    screen.blit(smallText.render("X", True, (255, 255, 255)), (30, 15))
+
+
 # human vs human button
 def HvH_button(pos):
-    if 30 + 140 > pos[0] > 30 and 50 + 50 > pos[1] > 50:
-        pygame.draw.rect(screen, (60, 60, 60), (30, 50, 140, 50))
+    if 20 + 140 > pos[0] > 20 and 50 + 50 > pos[1] > 50:
+        pygame.draw.rect(screen, (60, 60, 60), (20, 50, 140, 50))
     else:
-        pygame.draw.rect(screen, (30, 30, 30), (30, 50, 140, 50))
-    screen.blit(smallText.render("Vs Human", True, (255, 255, 255)), (60, 65))
+        pygame.draw.rect(screen, (30, 30, 30), (20, 50, 140, 50))
+    screen.blit(smallText.render("Vs Human", True, (255, 255, 255)), (50, 65))
 
 
 # human vs AI button
 def HvAI_button(pos):
-    if 30 + 140 > pos[0] > 30 and 120 + 50 > pos[1] > 120:
-        pygame.draw.rect(screen, (60, 60, 60), (30, 120, 140, 50))
+    if 20 + 140 > pos[0] > 20 and 120 + 50 > pos[1] > 120:
+        pygame.draw.rect(screen, (60, 60, 60), (20, 120, 140, 50))
     else:
-        pygame.draw.rect(screen, (30, 30, 30), (30, 120, 140, 50))
-    screen.blit(smallText.render("Vs AI", True, (255, 255, 255)), (75, 135))
+        pygame.draw.rect(screen, (30, 30, 30), (20, 120, 140, 50))
+    screen.blit(smallText.render("Vs Computer", True, (255, 255, 255)), (50, 135))
 
 
 # play again page
@@ -208,6 +222,7 @@ while not finish:
         # fill the background, board image, and buttons
         screen.fill((255, 193, 37))
         screen.blit(board_Img, (150, 0))
+        end_button(mouse)
         HvH_button(mouse)
         HvAI_button(mouse)
 
@@ -216,8 +231,8 @@ while not finish:
 
             # if click X top left corner, quit the game
             if event.type == pygame.QUIT:
-                #winning = True
-                #board.player = 0
+                # winning = True
+                # board.player = 0
                 pygame.quit()
                 quit()
 
@@ -231,8 +246,13 @@ while not finish:
             # check mouse click with its position
             elif event.type == pygame.MOUSEBUTTONUP:
 
+                #
+                if 20 + 30 > mouse[0] > 20 and 10 + 30 > mouse[1] > 10:
+                    winning = True
+                    board.player = 0
+
                 # when mouse click on human vs human button
-                if 30 + 140 > mouse[0] > 30 and 50 + 50 > mouse[1] > 50:
+                elif 20 + 140 > mouse[0] > 20 and 50 + 50 > mouse[1] > 50:
                     HumanMode = True
                     AiMode = False
                     Placing = True
@@ -241,7 +261,7 @@ while not finish:
                     board.reset()
 
                 # when mouse click on human vs AI button
-                elif 30 + 140 > mouse[0] > 30 and 120 + 50 > mouse[1] > 120:
+                elif 20 + 140 > mouse[0] > 20 and 120 + 50 > mouse[1] > 120:
                     HumanMode = False
                     AiMode = True
                     Placing = True
@@ -270,8 +290,10 @@ while not finish:
                             # check if number of men of player is less than 3, game over
                             if board.countMan[0] <= 2:
                                 print('111white win')
+                                winning = True
                             elif board.countMan[1] <= 2:
                                 print('111black win')
+                                winning = True
 
                             # check if adjacent point available, else game over
                             if board.noAdjacent():
@@ -322,7 +344,7 @@ while not finish:
                     if moveFrom is None:
                         for i, c in enumerate(cord):
                             if board.clickable(c, mouse, CircleSIZE) and board.board[i] == board.player:
-                                    moveFrom = i
+                                moveFrom = i
 
                     # fly to
                     else:
@@ -336,7 +358,6 @@ while not finish:
 
                                 # flying
                                 elif board.board[i] == 0:
-                                    print('move from ', moveFrom, ' to ', i)
                                     board.moving(moveFrom, i)
 
                                 # check if form a mill
@@ -424,7 +445,7 @@ while not finish:
 
                                 # check if no adjacent, game over
                                 if board.noAdjacent():
-                                    # winning = True
+                                    winning = True
                                     if board.player == 1:
                                         print('white win')
                                     else:
