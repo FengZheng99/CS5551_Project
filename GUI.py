@@ -67,9 +67,9 @@ def draw_board():
             screen.blit(largeText.render("Flying", True, (0, 0, 0)), (740, 105))
         elif board.player == -1 and white_flying:
             screen.blit(largeText.render("Flying", True, (0, 0, 0)), (740, 105))
-        elif placing:
+        elif placing_stage:
             screen.blit(largeText.render("Placing", True, (0, 0, 0)), (740, 105))
-        elif moving:
+        elif moving_stage:
             screen.blit(largeText.render("Moving", True, (0, 0, 0)), (740, 105))
 
     # draw the men
@@ -102,7 +102,7 @@ def draw_board():
                     pygame.draw.circle(screen, (0, 255, 0), (x, y), CircleSIZE + 5, 3)
 
     # highlight adjacent points
-    if moving and move_from is not None:
+    if moving_stage and move_from is not None:
         for adj in board.adjacent_pos(move_from):
             if board.board[adj] == 0:
                 x = cord[adj][0]
@@ -209,8 +209,8 @@ while not finish:
     human_mode = False
     computer_mode = False
     mill = False
-    placing = False
-    moving = False
+    placing_stage = False
+    moving_stage = False
     black_flying = False
     white_flying = False
 
@@ -256,18 +256,20 @@ while not finish:
                 elif 20 + 140 > mouse[0] > 20 and 50 + 50 > mouse[1] > 50:
                     human_mode = True
                     computer_mode = False
-                    placing = True
-                    moving = False
-                    Flying = False
+                    placing_stage = True
+                    moving_stage = False
+                    black_flying = False
+                    white_flying = False
                     board.reset()
 
                 # when mouse click on human vs AI button
                 elif 20 + 140 > mouse[0] > 20 and 120 + 50 > mouse[1] > 120:
                     human_mode = False
                     computer_mode = True
-                    placing = True
-                    moving = False
-                    Flying = False
+                    placing_stage = True
+                    moving_stage = False
+                    black_flying = False
+                    white_flying = False
                     board.reset()
 
                 # when mouse click on somewhere else
@@ -372,7 +374,7 @@ while not finish:
                                 board.change_turn()
 
                 # placing stage
-                elif placing:
+                elif placing_stage:
                     for i, c in enumerate(cord):
 
                         # only empty point can place a men
@@ -395,8 +397,8 @@ while not finish:
                                         print('1black win')
 
                                 # switch to moving stage
-                                placing = False
-                                moving = True
+                                placing_stage = False
+                                moving_stage = True
 
                             # check if form a mill
                             if board.is_mill(i, board.player):
@@ -407,7 +409,7 @@ while not finish:
                             board.change_turn()
 
                 # moving stage
-                elif moving:
+                elif moving_stage:
 
                     # move from
                     if move_from is None:
