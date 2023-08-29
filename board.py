@@ -1,22 +1,44 @@
+# Board class
+class Board:
 
-class Board():
+    # initiate
     def __init__(self, cord):
         self.cord = cord
         self.board = [0] * len(cord)
         self.player = 1
         self.placingMen = 0
+        self.countMan = [9, 9]
 
-    def changeTurn(self): self.player *= -1
+    # change turn
+    def changeTurn(self):
+        self.player *= -1
 
-    def reset(self): self.board, self.placingMen = [0] * len(self.cord), 0
+    # reset the board
+    def reset(self):
+        self.board = [0] * len(self.cord)
+        self.player = 1
+        self.placingMen = 0
+        self.countMan = [9, 9]
 
+    # placing a men
     def placing(self, pos):
         self.placingMen += 1
         self.board[pos] = self.player
 
+    # moving a men
+    def moving(self, pos, topos):
+        self.board[pos] = 0
+        self.board[topos] = self.player
+
+    # removing a men if mill
     def removing(self, pos):
         self.board[pos] = 0
+        if self.player == 1:
+            self.countMan[1] -= 1
+        else:
+            self.countMan[0] -= 1
 
+    # check if mill
     def isMill(self, index, p):
         mill_map = {
             0: [[1, 2], [9, 21]], 1: [[0, 2], [4, 7]], 2: [[0, 1], [14, 23]],
@@ -29,18 +51,18 @@ class Board():
             21: [[22, 23], [0, 9]], 22: [[21, 23], [16, 19]], 23: [[21, 22], [2, 14]]
         }
 
-        mill_index1, mill_index2 = mill_map[index][0], mill_map[index][1]
+        mill_index1 = mill_map[index][0]
+        mill_index2 = mill_map[index][1]
 
         if self.board[mill_index1[0]] == p and self.board[mill_index1[1]] == p:
-            print(mill_index1, index)
             return True
         elif self.board[mill_index2[0]] == p and self.board[mill_index2[1]] == p:
-            print(mill_index2, index)
             return True
         else:
             return False
 
-    def adjacentPos(self, index, p):
+    # return adjacent point to index
+    def adjacentPos(self, pos):
         adjacent_map = {
             0: [1, 9], 1: [0, 2, 4], 2: [1, 14],
             3: [4, 10], 4: [1, 3, 5, 7], 5: [4, 13],
@@ -51,4 +73,25 @@ class Board():
             18: [10, 19], 19: [16, 18, 20, 22], 20: [13, 19],
             21: [9, 22], 22: [19, 21, 23], 23: [14, 22],
         }
+        return adjacent_map[pos]
 
+    # check if no adjacent point
+    def noAdjacent(self):
+        count = 0
+        for i in range(len(self.board)):
+            if self.board[i] == self.player:
+                for adj in self.adjacentPos(i):
+                    if self.board[adj] == 0:
+                        count += 1
+        if count == 0:
+            return True
+        else:
+            return False
+
+    # check if valid point
+    def clickable(self, cor, m, size):
+        if cor[0] + size >= m[0] >= cor[0] - size and \
+                cor[1] + size >= m[1] >= cor[1] - size:
+            return True
+        else:
+            return False
