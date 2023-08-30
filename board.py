@@ -1,36 +1,36 @@
 # Board class
 class Board:
 
-    # initiate
+    # Initialize the board with its dimensions, player states, and other attributes
     def __init__(self, cord):
-        self.cord = cord
-        self.board = [0] * len(cord)
-        self.player = 1
-        self.placingMen = 0
-        self.countMan = [9, 9]
+        self.cord = cord # Coordinates for the board points
+        self.board = [0] * len(cord) # Game board represented as a list
+        self.player = 1 # Current player (1 or -1)
+        self.placingMen = 0 # Counter for men placed on board
+        self.countMan = [9, 9] # Number of men remaining for each player
 
-    # change turn
+    # Switch the turn to the other player
     def change_turn(self):
         self.player *= -1
 
-    # reset the board
+    # Reset the board to its initial state
     def reset(self):
         self.board = [0] * len(self.cord)
         self.player = 1
         self.placingMen = 0
         self.countMan = [9, 9]
 
-    # placing a men
+    # Place a man at the given position on the board
     def placing(self, pos):
         self.placingMen += 1
         self.board[pos] = self.player
 
-    # moving a men
+    # Move a man from one position to another
     def moving(self, pos, topos):
         self.board[pos] = 0
         self.board[topos] = self.player
 
-    # removing a men if mill
+    #  Remove a man from the board if a mill condition is met
     def removing(self, pos):
         self.board[pos] = 0
         if self.player == 1:
@@ -38,8 +38,9 @@ class Board:
         else:
             self.countMan[0] -= 1
 
-    # check if mill
+    # Check if a mill condition is met at the given index for player 'p'
     def is_mill(self, index, p):
+        # Map for all possible mill combinations
         mill_map = {
             0: [[1, 2], [9, 21]], 1: [[0, 2], [4, 7]], 2: [[0, 1], [14, 23]],
             3: [[4, 5], [10, 18]], 4: [[3, 5], [1, 7]], 5: [[3, 4], [13, 20]],
@@ -51,6 +52,7 @@ class Board:
             21: [[22, 23], [0, 9]], 22: [[21, 23], [16, 19]], 23: [[21, 22], [2, 14]]
         }
 
+        # Extract the mill indices based on the given index
         mill_index1 = mill_map[index][0]
         mill_index2 = mill_map[index][1]
 
@@ -61,8 +63,9 @@ class Board:
         else:
             return False
 
-    # return adjacent point to index
+    # Return the positions adjacent to the given position 'pos'
     def adjacent_pos(self, pos):
+        # Map for all possible adjacent points
         adjacent_map = {
             0: [1, 9], 1: [0, 2, 4], 2: [1, 14],
             3: [4, 10], 4: [1, 3, 5, 7], 5: [4, 13],
@@ -75,7 +78,7 @@ class Board:
         }
         return adjacent_map[pos]
 
-    # check if no adjacent point
+    # Check if there are no valid adjacent points to move to for the current player
     def no_adjacent(self):
         count = 0
         for i in range(len(self.board)):
@@ -88,7 +91,7 @@ class Board:
         else:
             return False
 
-    # check if valid point
+    # Check if a click is within a clickable area around a coordinate 'cor'.
     def clickable(self, cor, m, size):
         if cor[0] + size >= m[0] >= cor[0] - size and \
                 cor[1] + size >= m[1] >= cor[1] - size:
