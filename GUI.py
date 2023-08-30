@@ -73,8 +73,6 @@ def draw_board():
         elif moving_stage: # If the game is in the moving stage
             screen.blit(large_text.render("Moving", True, (0, 0, 0)), (740, 105))
 
-    # Function to draw the game pieces ('men') on the board
-def draw_men():
     for loc in range(len(board.board)):
 
         # Draw black men
@@ -373,7 +371,7 @@ while not finish:
                 # Handling placing stage
                 elif placing_stage:
                     for i, c in enumerate(cord):
-
+                    
                         # Only empty point can place a men
                         if board.board[i] != 0:
                             print('chose a empty point')
@@ -381,7 +379,7 @@ while not finish:
                         # Placing
                         elif board.clickable(c, mouse, CIRCLE_SIZE):
                             board.placing(i)
-
+                            print(board.board)
                             # Check if all men is placed
                             if board.placingMen == 18:
 
