@@ -1,7 +1,7 @@
 # Import standard libraries and custom board class
 import time
 import pygame
-import board
+from board import Board
 
 # Initialize the pygame engine
 pygame.init()
@@ -17,7 +17,7 @@ cord = [(200, 50), (400, 50), (600, 50),
         ]
 
 # Initiate the game board
-board = board.Board(cord)
+board = Board(cord)
 
 # Configure the pygame window
 screen = pygame.display.set_mode([900, 500])
@@ -169,6 +169,7 @@ def play_again():
 
                 # Click 'Yes' to play again
                 if 270 + 90 > mouse[0] > 270 and 385 + 50 > mouse[1] > 385:
+                    board.reset()
                     return False
                 # Click 'No' to quit the game
                 elif 515 + 90 > mouse[0] > 515 and 385 + 50 > mouse[1] > 385:
@@ -273,8 +274,10 @@ while not finish:
 
                 # Check if a mill formation is detected
                 elif mill:
+                    valid_point = False
                     for i, c in enumerate(cord):
                         if board.clickable(c, mouse, CIRCLE_SIZE) and board.board[i] == board.player * -1:
+                            valid_point = True
                             board.removing(i)
                             mill = False
                             board.change_turn()
@@ -301,6 +304,9 @@ while not finish:
                                     print('11white win')
                                 else:
                                     print('11black win')
+                        
+                    if not valid_point:
+                        print('chose a opponent point')
 
                 # Handling flying when black has only 3 men
                 elif black_flying and board.player == 1:
@@ -371,37 +377,38 @@ while not finish:
                 # Handling placing stage
                 elif placing_stage:
                     for i, c in enumerate(cord):
-                    
-                        # Only empty point can place a men
-                        if board.board[i] != 0:
-                            print('chose a empty point')
-                            continue
-                        # Placing
-                        elif board.clickable(c, mouse, CIRCLE_SIZE):
-                            board.placing(i)
-                            print(board.board)
-                            # Check if all men is placed
-                            if board.placingMen == 18:
+                        if board.clickable(c, mouse, CIRCLE_SIZE):
 
-                                # If no adjacent points to move, game over
-                                if board.no_adjacent():
-                                    winning = True
-                                    if board.player == 1:
-                                        print('1white win')
-                                    else:
-                                        print('1black win')
+                            # Only empty point can place a men
+                            if board.board[i] != 0:
+                                print('chose a empty point')
+                                continue
+                            # Placing
+                            elif board.clickable(c, mouse, CIRCLE_SIZE):
+                                board.placing(i)
+                                print(board.board)
+                                # Check if all men is placed
+                                if board.placingMen == 18:
 
-                                # Switch to moving stage
-                                placing_stage = False
-                                moving_stage = True
+                                    # If no adjacent points to move, game over
+                                    if board.no_adjacent():
+                                        winning = True
+                                        if board.player == 1:
+                                            print('1white win')
+                                        else:
+                                            print('1black win')
 
-                            # Check if form a mill
-                            if board.is_mill(i, board.player):
-                                mill = True
-                                break
+                                    # Switch to moving stage
+                                    placing_stage = False
+                                    moving_stage = True
 
-                            # Change turn
-                            board.change_turn()
+                                # Check if form a mill
+                                if board.is_mill(i, board.player):
+                                    mill = True
+                                    break
+
+                                # Change turn
+                                board.change_turn()
 
                 # Handling moving stage
                 elif moving_stage:
