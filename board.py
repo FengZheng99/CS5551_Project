@@ -5,7 +5,7 @@ class Board:
     def __init__(self, cord):
         self.cord = cord # Coordinates for the board points
         self.board = [0] * len(cord) # Game board represented as a list
-        self.player = 1 # Current player (1 or -1)
+        self.player = -1 # Current player (1 or -1)
         self.placingMen = 0 # Counter for men placed on board
         self.countMan = [9, 9] # Number of men remaining for each player
 
@@ -16,7 +16,7 @@ class Board:
     # Reset the board to its initial state
     def reset(self):
         self.board = [0] * len(self.cord)
-        self.player = 1
+        self.player = -1
         self.placingMen = 0
         self.countMan = [9, 9]
 
