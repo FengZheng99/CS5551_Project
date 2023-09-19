@@ -3,8 +3,14 @@ import time
 import pygame
 from board import Board
 
-# Initialize the pygame engine
-pygame.init()
+# Initialize the font module
+pygame.font.init()
+
+# Font settings as global variables for text display to be called 
+small_text = pygame.font.SysFont('Arial', 15)
+median_text = pygame.font.SysFont('Arial', 25)
+large_text = pygame.font.SysFont('Arial', 35)
+winner_text = pygame.font.SysFont('Arial', 70)
 
 # Define the coordinates for the 24 points on the Nine Men's Morris board
 cord = [(200, 50), (400, 50), (600, 50),
@@ -16,27 +22,14 @@ cord = [(200, 50), (400, 50), (600, 50),
         (200, 450), (400, 450), (600, 450)
         ]
 
-# Initiate the game board
-board = Board(cord)
-
-# Configure the pygame window
+# Initiate the pygame window
 screen = pygame.display.set_mode([900, 500])
-pygame.display.set_caption("Nine Men's Morris")
-
-# Load board image
-board_Img = pygame.image.load('board.png')
 
 # Define game settings
 CIRCLE_SIZE = 12 # Size of the circle markers
-# Font settings for text display
-small_text = pygame.font.SysFont('Arial', 15)
-median_text = pygame.font.SysFont('Arial', 25)
-large_text = pygame.font.SysFont('Arial', 35)
-winner_text = pygame.font.SysFont('Arial', 70)
-
 
 # Function to draw the game board and status information
-def draw_board():
+def draw_board(board):
     # Display grid labels
     chars = 'abcdefg'
     for i, char in enumerate(chars):
@@ -139,7 +132,6 @@ def hvh_button(pos):
         pygame.draw.rect(screen, (30, 30, 30), (20, 50, 140, 50))
     screen.blit(small_text.render("Vs Human", True, (255, 255, 255)), (50, 65))
 
-
 # Function to draw the button for Human vs Computer mode
 def hvcomputer_button(pos):
     if 20 + 140 > pos[0] > 20 and 120 + 50 > pos[1] > 120:
@@ -148,8 +140,8 @@ def hvcomputer_button(pos):
         pygame.draw.rect(screen, (30, 30, 30), (20, 120, 140, 50))
     screen.blit(small_text.render("Vs Computer", True, (255, 255, 255)), (50, 135))
 
-# Page to ask if the user wants to play again
-def play_again():
+# Function to load a page to ask if the user wants to play again
+def play_again(board):
     again = True
     while again:
 
@@ -169,7 +161,6 @@ def play_again():
 
                 # Click 'Yes' to play again
                 if 270 + 90 > mouse[0] > 270 and 385 + 50 > mouse[1] > 385:
-                    board.reset()
                     return False
                 # Click 'No' to quit the game
                 elif 515 + 90 > mouse[0] > 515 and 385 + 50 > mouse[1] > 385:
@@ -195,12 +186,17 @@ def play_again():
         screen.blit(small_text.render("No", True, (255, 255, 255)), (550, 400))
         pygame.display.update()
 
-# Main game loop
-finish = False
-winning = False
+# Function to initiate game settings
+def game_settings():
+    global move_from
+    global human_mode
+    global computer_mode
+    global mill
+    global placing_stage
+    global moving_stage
+    global black_flying
+    global white_flying
 
-while not finish:
-    # Initiate game settings
     move_from = None
     human_mode = False
     computer_mode = False
@@ -210,175 +206,199 @@ while not finish:
     black_flying = False
     white_flying = False
 
-    # while there is no winner
-    while not winning:
+# Function to initiate game settings
+def hvh_settings(board):
 
-        # Get mouse position and handle UI elements
-        mouse = pygame.mouse.get_pos()
+    human_mode = True
+    computer_mode = False
+    placing_stage = True
+    moving_stage = False
+    black_flying = False
+    white_flying = False
+    board.reset()
 
-        # Fill the background, board image, and buttons
-        screen.fill((255, 193, 37))
-        screen.blit(board_Img, (150, 0))
-        end_button(mouse)
-        hvh_button(mouse)
-        hvcomputer_button(mouse)
+# Function to initiate game settings
+def hvc_settings(board):
 
-        # Event handling loop
-        for event in pygame.event.get():
+    human_mode = False
+    computer_mode = True
+    placing_stage = True
+    moving_stage = False
+    black_flying = False
+    white_flying = False
+    board.reset()
 
-            # Handle 'Quit' event
-            if event.type == pygame.QUIT:
-                # winning = True
-                # board.player = 0
-                pygame.quit()
-                quit()
+# Main Function
+def main():
 
-            # Handle 'Reset' key press event
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_r:
-                    human_mode = False
-                    computer_mode = False
-                    board.reset()
+    # Initiate the game board
+    board = Board(cord)
 
-            # Handle mouse click events
-            elif event.type == pygame.MOUSEBUTTONUP:
+    # Configure the pygame window
+    pygame.display.set_caption("Nine Men's Morris")
 
-                # Check if a button is clicked to start the game in a winning state
-                if 20 + 30 > mouse[0] > 20 and 10 + 30 > mouse[1] > 10:
-                    winning = True
-                    board.player = 0
+    # Load board image
+    board_Img = pygame.image.load('board.png')
 
-                # Check if the human vs human button is clicked
-                elif 20 + 140 > mouse[0] > 20 and 50 + 50 > mouse[1] > 50:
-                    human_mode = True
-                    computer_mode = False
-                    placing_stage = True
-                    moving_stage = False
-                    black_flying = False
-                    white_flying = False
-                    board.reset()
+    # Main game loop
+    finish = False
+    winning = False
 
-                # Check if the human vs computer button is clicked
-                elif 20 + 140 > mouse[0] > 20 and 120 + 50 > mouse[1] > 120:
-                    human_mode = False
-                    computer_mode = True
-                    placing_stage = True
-                    moving_stage = False
-                    black_flying = False
-                    white_flying = False
-                    board.reset()
+    while not finish:
+        # Initiate game settings
+        game_settings()
 
-                # Check if mouse clicked somewhere other than the available modes
-                elif not human_mode and not computer_mode:
-                    continue
+        # while there is no winner
+        while not winning:
 
-                # Check if a mill formation is detected
-                elif mill:
-                    valid_point = False
-                    for i, c in enumerate(cord):
-                        if board.clickable(c, mouse, CIRCLE_SIZE) and board.board[i] == board.player * -1:
-                            valid_point = True
-                            board.removing(i)
-                            mill = False
-                            board.change_turn()
+            # Get mouse position and handle UI elements
+            mouse = pygame.mouse.get_pos()
 
-                            # check if number of men of player is equal to 3, turn on flying
-                            if board.countMan[0] == 3:
-                                black_flying = True
-                            if board.countMan[1] == 3:
-                                white_flying = True
+            # Fill the background, board image, and buttons
+            screen.fill((255, 193, 37))
+            screen.blit(board_Img, (150, 0))
+            end_button(mouse)
+            hvh_button(mouse)
+            hvcomputer_button(mouse)
 
-                            # check if number of men of player is less than 3, game over
-                            if board.countMan[0] <= 2:
-                                print('111white win')
-                                winning = True
-                            elif board.countMan[1] <= 2:
-                                print('111black win')
-                                winning = True
+            # Event handling loop
+            for event in pygame.event.get():
 
-                            # check if adjacent point available, else game over
-                            if board.no_adjacent():
+                # Handle 'Quit' event
+                if event.type == pygame.QUIT:
+                    # winning = True
+                    # board.player = 0
+                    pygame.quit()
+                    quit()
 
-                                winning = True
-                                if board.player == 1:
-                                    print('11white win')
-                                else:
-                                    print('11black win')
+                # Handle 'Reset' key press event
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_r:
+                        human_mode = False
+                        computer_mode = False
+                        board.reset()
+
+                # Handle mouse click events
+                elif event.type == pygame.MOUSEBUTTONUP:
+
+                    # Check if a button is clicked to start the game in a winning state
+                    if 20 + 30 > mouse[0] > 20 and 10 + 30 > mouse[1] > 10:
+                        winning = True
+                        board.player = 0
+
+                    # Check if the human vs human button is clicked
+                    elif 20 + 140 > mouse[0] > 20 and 50 + 50 > mouse[1] > 50:
+                        hvh_settings(board)
+
+                    # Check if the human vs computer button is clicked
+                    elif 20 + 140 > mouse[0] > 20 and 120 + 50 > mouse[1] > 120:
+                        hvc_settings(board)
+
+                    # Check if mouse clicked somewhere other than the available modes
+                    elif not human_mode and not computer_mode:
+                        continue
+
+                    # Check if a mill formation is detected
+                    elif mill:
+                        for i, c in enumerate(cord):
+                            if board.clickable(c, mouse, CIRCLE_SIZE) and board.board[i] == board.player * -1:
+                                board.removing(i)
+                                mill = False
+                                board.change_turn()
+
+                                # check if number of men of player is equal to 3, turn on flying
+                                if board.countMan[0] == 3:
+                                    black_flying = True
+                                if board.countMan[1] == 3:
+                                    white_flying = True
+
+                                # check if number of men of player is less than 3, game over
+                                if board.countMan[0] <= 2:
+                                    print('111white win')
+                                    winning = True
+                                elif board.countMan[1] <= 2:
+                                    print('111black win')
+                                    winning = True
+
+                                # check if adjacent point available, else game over
+                                if board.no_adjacent():
+
+                                    winning = True
+                                    if board.player == 1:
+                                        print('11white win')
+                                    else:
+                                        print('11black win')
+
+                    # Handling flying when black has only 3 men
+                    elif black_flying and board.player == 1:
+
+                        # Fly from
+                        if move_from is None:
+                            for i, c in enumerate(cord):
+                                if board.clickable(c, mouse, CIRCLE_SIZE) and board.board[i] == board.player:
+                                    move_from = i
+
+                        # Fly to
+                        else:
+                            for i, c in enumerate(cord):
+                                if board.clickable(c, mouse, CIRCLE_SIZE) and i != move_from:
+
+                                    # Change a men to fly
+                                    if board.board[i] == board.player:
+                                        move_from = i
+                                        break
+
+                                    # Flying
+                                    elif board.board[i] == 0:
+                                        board.moving(move_from, i)
+
+                                    # Check if form a mill
+                                    if board.is_mill(i, board.player):
+                                        mill = True
+                                        move_from = None
+                                        break
+
+                                    # Change turn
+                                    move_from = None
+                                    board.change_turn()
+
+                    # Handling flying when white has only 3 men
+                    elif white_flying and board.player == -1:
+
+                        # Fly from
+                        if move_from is None:
+                            for i, c in enumerate(cord):
+                                if board.clickable(c, mouse, CIRCLE_SIZE) and board.board[i] == board.player:
+                                    move_from = i
+
+                        # Fly to
+                        else:
+                            for i, c in enumerate(cord):
+                                if board.clickable(c, mouse, CIRCLE_SIZE) and i != move_from:
+
+                                    # Change a men to fly
+                                    if board.board[i] == board.player:
+                                        move_from = i
+                                        break
+
+                                    # Flying
+                                    elif board.board[i] == 0:
+                                        board.moving(move_from, i)
+
+                                    # Check if form a mill
+                                    if board.is_mill(i, board.player):
+                                        mill = True
+                                        move_from = None
+                                        break
+
+                                    # Change turn
+                                    move_from = None
+                                    board.change_turn()
+
+                    # Handling placing stage
+                    elif placing_stage:
+                        for i, c in enumerate(cord):
                         
-                    if not valid_point:
-                        print('chose a opponent point')
-
-                # Handling flying when black has only 3 men
-                elif black_flying and board.player == 1:
-
-                    # Fly from
-                    if move_from is None:
-                        for i, c in enumerate(cord):
-                            if board.clickable(c, mouse, CIRCLE_SIZE) and board.board[i] == board.player:
-                                move_from = i
-
-                    # Fly to
-                    else:
-                        for i, c in enumerate(cord):
-                            if board.clickable(c, mouse, CIRCLE_SIZE) and i != move_from:
-
-                                # Change a men to fly
-                                if board.board[i] == board.player:
-                                    move_from = i
-                                    break
-
-                                # Flying
-                                elif board.board[i] == 0:
-                                    board.moving(move_from, i)
-
-                                # Check if form a mill
-                                if board.is_mill(i, board.player):
-                                    mill = True
-                                    move_from = None
-                                    break
-
-                                # Change turn
-                                move_from = None
-                                board.change_turn()
-
-                # Handling flying when white has only 3 men
-                elif white_flying and board.player == -1:
-
-                    # Fly from
-                    if move_from is None:
-                        for i, c in enumerate(cord):
-                            if board.clickable(c, mouse, CIRCLE_SIZE) and board.board[i] == board.player:
-                                move_from = i
-
-                    # Fly to
-                    else:
-                        for i, c in enumerate(cord):
-                            if board.clickable(c, mouse, CIRCLE_SIZE) and i != move_from:
-
-                                # Change a men to fly
-                                if board.board[i] == board.player:
-                                    move_from = i
-                                    break
-
-                                # Flying
-                                elif board.board[i] == 0:
-                                    board.moving(move_from, i)
-
-                                # Check if form a mill
-                                if board.is_mill(i, board.player):
-                                    mill = True
-                                    move_from = None
-                                    break
-
-                                # Change turn
-                                move_from = None
-                                board.change_turn()
-
-                # Handling placing stage
-                elif placing_stage:
-                    for i, c in enumerate(cord):
-                        if board.clickable(c, mouse, CIRCLE_SIZE):
-
                             # Only empty point can place a men
                             if board.board[i] != 0:
                                 print('chose a empty point')
@@ -410,57 +430,62 @@ while not finish:
                                 # Change turn
                                 board.change_turn()
 
-                # Handling moving stage
-                elif moving_stage:
+                    # Handling moving stage
+                    elif moving_stage:
 
-                    # Move from
-                    if move_from is None:
-                        for i, c in enumerate(cord):
-                            if board.clickable(c, mouse, CIRCLE_SIZE) and board.board[i] == board.player:
-                                move_from = i
-
-                    # Move to
-                    else:
-                        for i, c in enumerate(cord):
-                            if board.clickable(c, mouse, CIRCLE_SIZE) and i != move_from:
-
-                                # Change a men to move
-                                if board.board[i] == board.player:
+                        # Move from
+                        if move_from is None:
+                            for i, c in enumerate(cord):
+                                if board.clickable(c, mouse, CIRCLE_SIZE) and board.board[i] == board.player:
                                     move_from = i
-                                    break
 
-                                # Can only move to adjacent points
-                                elif i not in board.adjacent_pos(move_from):
-                                    print('That is not an adjacent point')
-                                    break
+                        # Move to
+                        else:
+                            for i, c in enumerate(cord):
+                                if board.clickable(c, mouse, CIRCLE_SIZE) and i != move_from:
 
-                                # Moving
-                                elif board.board[i] == 0 and i in board.adjacent_pos(move_from):
-                                    board.moving(move_from, i)
+                                    # Change a men to move
+                                    if board.board[i] == board.player:
+                                        move_from = i
+                                        break
 
-                                # Check if form a mill
-                                if board.is_mill(i, board.player):
-                                    mill = True
+                                    # Can only move to adjacent points
+                                    elif i not in board.adjacent_pos(move_from):
+                                        print('That is not an adjacent point')
+                                        break
+
+                                    # Moving
+                                    elif board.board[i] == 0 and i in board.adjacent_pos(move_from):
+                                        board.moving(move_from, i)
+
+                                    # Check if form a mill
+                                    if board.is_mill(i, board.player):
+                                        mill = True
+                                        move_from = None
+                                        break
+
+                                    # Change turn
                                     move_from = None
-                                    break
+                                    board.change_turn()
 
-                                # Change turn
-                                move_from = None
-                                board.change_turn()
+                                    # Check if no adjacent points, game over
+                                    if board.no_adjacent():
+                                        winning = True
+                                        if board.player == 1:
+                                            print('white win')
+                                        else:
+                                            print('black win')
 
-                                # Check if no adjacent points, game over
-                                if board.no_adjacent():
-                                    winning = True
-                                    if board.player == 1:
-                                        print('white win')
-                                    else:
-                                        print('black win')
+            # Update the display
+            draw_board(board)
+            pygame.display.update()
 
-        # Update the display
-        draw_board()
-        pygame.display.update()
+        # Check if the user wants to play again
+        winning = play_again(board)
 
-    # Check if the user wants to play again
-    winning = play_again()
+    
 
-pygame.quit()
+if __name__ == "__main__":
+    pygame.init()
+    main()
+    pygame.quit()
