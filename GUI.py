@@ -301,8 +301,10 @@ def main():
 
                     # Check if a mill formation is detected
                     elif mill:
+                        valid_point = False
                         for i, c in enumerate(cord):
                             if board.clickable(c, mouse, CIRCLE_SIZE) and board.board[i] == board.player * -1:
+                                valid_point = True
                                 board.removing(i)
                                 mill = False
                                 board.change_turn()
@@ -329,7 +331,8 @@ def main():
                                         print('11white win')
                                     else:
                                         print('11black win')
-
+                        if not valid_point:
+                            print('chose a opponent point')
                     # Handling flying when black has only 3 men
                     elif black_flying and board.player == 1:
 
