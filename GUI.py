@@ -17,11 +17,19 @@ winner_text = pygame.font.SysFont('Arial', 70)
 cord = [(200, 50), (400, 50), (600, 50),
         (266, 116), (400, 116), (534, 116),
         (334, 184), (400, 184), (466, 184),
-        (200, 250), (266, 250), (334, 250), (466, 250), (534, 250), (600, 250),
+        (200, 250), (266, 250), (334, 250), 
+        (466, 250), (534, 250), (600, 250),
         (334, 316), (400, 316), (466, 316),
         (266, 384), (400, 384), (534, 384),
         (200, 450), (400, 450), (600, 450)
         ]
+
+mill_track = {
+        'm1': 0, 'm2': 0, 'm3': 0, 'm4': 0,
+        'm5': 0, 'm6': 0, 'm7': 0, 'm8': 0,
+        'm9': 0, 'm10': 0, 'm11': 0, 'm12': 0,
+        'm13': 0, 'm14': 0, 'm15': 0, 'm16': 0
+}
 
 # Initiate the pygame window
 screen = pygame.display.set_mode([900, 500])
@@ -197,6 +205,7 @@ def game_settings():
     global moving_stage
     global black_flying
     global white_flying
+    global mill_track
 
     move_from = None
     human_mode = False
@@ -206,9 +215,22 @@ def game_settings():
     moving_stage = False
     black_flying = False
     white_flying = False
+    mill_track = {
+        'm1': 0, 'm2': 0, 'm3': 0, 'm4': 0,
+        'm5': 0, 'm6': 0, 'm7': 0, 'm8': 0,
+        'm9': 0, 'm10': 0, 'm11': 0, 'm12': 0,
+        'm13': 0, 'm14': 0, 'm15': 0, 'm16': 0
+    }
 
 # Function to initiate game settings
 def hvh_settings(board):
+
+    global human_mode
+    global computer_mode
+    global placing_stage
+    global moving_stage
+    global black_flying
+    global white_flying
 
     human_mode = True
     computer_mode = False
@@ -221,6 +243,13 @@ def hvh_settings(board):
 # Function to initiate game settings
 def hvc_settings(board):
 
+    global human_mode
+    global computer_mode
+    global placing_stage
+    global moving_stage
+    global black_flying
+    global white_flying
+
     human_mode = False
     computer_mode = True
     placing_stage = True
@@ -232,8 +261,18 @@ def hvc_settings(board):
 # Main Function
 def main():
 
+    global move_from
+    global human_mode
+    global computer_mode
+    global mill
+    global placing_stage
+    global moving_stage
+    global black_flying
+    global white_flying
+    global mill_track
+
     # Initiate the game board
-    board = Board(cord)
+    board = Board(cord, mill_track)
 
     # Configure the pygame window
     pygame.display.set_caption("Nine Men's Morris")
@@ -302,22 +341,48 @@ def main():
                     # Check if a mill formation is detected
                     elif mill:
                         for i, c in enumerate(cord):
-                            if board.clickable(c, mouse, CIRCLE_SIZE) and board.board[i] == board.player * -1:
+
+                            mills = {
+                                'm1': [0, 1, 2], 'm2': [3, 4, 5], 'm3': [6, 7, 8], 'm4': [9, 10, 11],
+                                'm5': [12, 13, 14], 'm6': [15, 16, 17], 'm7': [18, 19, 20], 'm8': [21, 22, 23],
+                                'm9': [0, 9, 21], 'm10': [3, 10, 18], 'm11': [6, 11, 15], 'm12': [1, 4, 7],
+                                'm13': [16, 19, 22], 'm14': [8, 12, 17], 'm15': [5, 13, 20], 'm16': [2, 14, 23]
+                            }
+
+                            non_removeble = []
+
+                            for mill_key, mill_value in mills.items():
+                                if mill_track[mill_key] == board.player * -1:
+                                    for pos in mill_value:
+                                        non_removeble.append(pos)
+
+                            current_players_men = []
+                            
+                            for position, man in enumerate(board.board):
+                                if man == board.player * -1:  # Check if man is equal to -1
+                                    current_players_men.append(position)
+
+                            print(current_players_men)
+                            print(non_removeble)
+                            
+                            # board.countCurMan[board.player * -1] <= 3    
+                            if board.clickable(c, mouse, CIRCLE_SIZE) and board.board[i] == board.player * -1 and ((i not in non_removeble) or all(map(lambda x: x in non_removeble, current_players_men))):
+
                                 board.removing(i)
                                 mill = False
                                 board.change_turn()
 
                                 # check if number of men of player is equal to 3, turn on flying
-                                if board.countMan[0] == 3:
-                                    black_flying = True
                                 if board.countMan[1] == 3:
+                                    black_flying = True
+                                if board.countMan[-1] == 3:
                                     white_flying = True
 
                                 # check if number of men of player is less than 3, game over
-                                if board.countMan[0] <= 2:
+                                if board.countMan[1] <= 2:
                                     print('111white win')
                                     winning = True
-                                elif board.countMan[1] <= 2:
+                                elif board.countMan[-1] <= 2:
                                     print('111black win')
                                     winning = True
 
@@ -329,6 +394,8 @@ def main():
                                         print('11white win')
                                     else:
                                         print('11black win')
+
+
 
                     # Handling flying when black has only 3 men
                     elif black_flying and board.player == 1:
@@ -357,6 +424,7 @@ def main():
                                     if board.is_mill(i, board.player):
                                         mill = True
                                         move_from = None
+                                        mill_track = board.mill_list(i, board.player)
                                         break
 
                                     # Change turn
@@ -390,6 +458,7 @@ def main():
                                     if board.is_mill(i, board.player):
                                         mill = True
                                         move_from = None
+                                        mill_track = board.mill_list(i, board.player)
                                         break
 
                                     # Change turn
@@ -426,6 +495,7 @@ def main():
                                 # Check if form a mill
                                 if board.is_mill(i, board.player):
                                     mill = True
+                                    mill_track = board.mill_list(i, board.player)
                                     break
 
                                 # Change turn
@@ -463,6 +533,7 @@ def main():
                                     if board.is_mill(i, board.player):
                                         mill = True
                                         move_from = None
+                                        mill_track = board.mill_list(i, board.player)
                                         break
 
                                     # Change turn
