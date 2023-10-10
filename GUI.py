@@ -609,7 +609,7 @@ def main():
                         board.player = -1
                         print("White button clicked")
 
-                    elif 180 + 435 > mouse[0] > 180 and 35 + 435 > mouse[1] > 35 and board.player == 0:
+                    elif 180 + 440 > mouse[0] > 180 and 30 + 440 > mouse[1] > 30 and board.player == 0:
                         print("ignore")
                         continue
                     
