@@ -325,14 +325,14 @@ def mill_rule(board, mouse):
             # check if number of men of player is equal to 3, turn on flying
             if board.count_piece[1] == 3:
                 black_flying = True
-            if board.count_piece[-1] == 3:
+            if board.count_piece[0] == 3:
                 white_flying = True
 
             # check if number of men of player is less than 3, game over
             if board.count_piece[1] <= 2:
                 print('111white win')
                 winning = True
-            elif board.count_piece[-1] <= 2:
+            elif board.count_piece[0] <= 2:
                 print('111black win')
                 winning = True
 
@@ -344,6 +344,7 @@ def mill_rule(board, mouse):
                     print('11white win')
                 else:
                     print('11black win')
+    print(board.board)
 
 # Function to handle the game rule of black flying
 def black_fly_rule(board, mouse):
@@ -382,6 +383,7 @@ def black_fly_rule(board, mouse):
                 # Change turn
                 move_from = None
                 board.change_turn()
+    print(board.board)
 
 # Function to handle the game rule of white flying
 def white_fly_rule(board, mouse):
@@ -420,6 +422,7 @@ def white_fly_rule(board, mouse):
                 # Change turn
                 move_from = None
                 board.change_turn()
+    print(board.board)
 
 # Function to implement rules of piece placing
 def place_piece_rule(board, mouse):
@@ -515,6 +518,7 @@ def move_piece_rule(board, mouse):
                         print('white win')
                     else:
                         print('black win')
+    print(board.board)
 
 # Main Function
 def main():
@@ -622,11 +626,11 @@ def main():
                         mill_rule(board, mouse)
 
                     # Handling flying when black has only 3 men
-                    elif black_flying and board.player == -1:
+                    elif black_flying and board.player == 1:
                         black_fly_rule(board, mouse)
 
                     # Handling flying when white has only 3 men
-                    elif white_flying and board.player == 1:
+                    elif white_flying and board.player == -1:
                         white_fly_rule(board, mouse)
 
                     # Handling place_piece stage

@@ -1,0 +1,67 @@
+Player1 1 placed a piece at 0
+Player2 -1 placed a piece at 3
+Player1 1 placed a piece at 1
+Player2 -1 placed a piece at 4
+Player1 1 placed a piece at 9
+Player2 -1 placed a piece at 10
+Player1 1 placed a piece at 22
+Player2 -1 placed a piece at 19
+Player1 1 placed a piece at 23
+Player2 -1 placed a piece at 20
+Player1 1 placed a piece at 14
+Player2 -1 placed a piece at 13
+Player1 1 placed a piece at 6
+Player2 -1 placed a piece at 15
+Player1 1 placed a piece at 17
+Player2 -1 placed a piece at 8
+Player1 1 placed a piece at 21
+Player1 1 removed a piece at 15
+Player2 -1 placed a piece at 2
+Player1 1 moved a piece from 17 to 16
+Player2 -1 moved a piece from 4 to 5
+Player2 -1 removed a piece at 16
+Player1 1 moved a piece from 6 to 11
+Player2 -1 moved a piece from 5 to 4
+Player1 1 moved a piece from 11 to 15
+Player2 -1 moved a piece from 4 to 5
+Player2 -1 removed a piece at 15
+Player1 1 moved a piece from 1 to 4
+Player2 -1 moved a piece from 19 to 18
+Player2 -1 removed a piece at 4
+Player1 1 moved a piece from 22 to 19
+Player2 -1 moved a piece from 8 to 7
+Player1 1 moved a piece from 19 to 22
+Player1 1 removed a piece at 2
+Player2 -1 moved a piece from 7 to 4
+Player2 -1 removed a piece at 14
+Player1 1 moved a piece from 23 to 14
+Player2 -1 moved a piece from 18 to 19
+Player1 1 moved a piece from 14 to 23
+Player1 1 removed a piece at 19
+Player2 -1 moved a piece from 20 to 19
+Player1 1 moved a piece from 23 to 14
+Player2 -1 moved a piece from 19 to 18
+Player2 -1 removed a piece at 14
+Player1 1 moved a piece from 22 to 23
+Player2 -1 moved a piece from 18 to 19
+Player1 1 moved a piece from 0 to 1
+Player2 -1 moved a piece from 10 to 18
+Player1 1 moved a piece from 1 to 0
+Player1 1 removed a piece at 19
+Player2 -1 moved a piece from 18 to 19
+Player1 1 moved a piece from 23 to 22
+Player2 -1 moved a piece from 19 to 20
+Player2 -1 removed a piece at 22
+Player1 1 moved a piece from 9 to 19
+Player2 -1 moved a piece from 3 to 10
+Player1 1 moved a piece from 19 to 9
+Player1 1 removed a piece at 10
+Player2 -1 moved a piece from 4 to 3
+Player1 1 moved a piece from 0 to 1
+Player2 -1 moved a piece from 3 to 10
+Player1 1 moved a piece from 1 to 3
+Player2 -1 moved a piece from 10 to 11
+Player1 1 moved a piece from 3 to 0
+Player1 1 removed a piece at 11
+Player2 -1 moved a piece from 13 to 11
+Player1 1 moved a piece from 9 to 12
