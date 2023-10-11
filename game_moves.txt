@@ -1,4 +1,0 @@
-Player2 -1 placed a piece at 7
-Player1 1 placed a piece at 4
-Player2 -1 placed a piece at 3
-Player1 1 placed a piece at 5
