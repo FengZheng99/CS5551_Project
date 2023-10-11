@@ -1,0 +1,2 @@
+Placing 1 1
+Placing 4 -1

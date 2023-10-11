@@ -1,3 +1,4 @@
+import os
 import time
 
 # Define constants for the game
@@ -48,16 +49,8 @@ class Board:
         self.placed_piece = 0 # Counter for men placed on board
         self.count_piece = [INITIAL_PIECES, INITIAL_PIECES] # Number of men remaining for each player
         self.count_current_piece = [0, 0] # Number of men on the board for each player
-
-        # Open the file for recording the game moves
-        self.move_file = open("game_moves.txt", "w")
-
-    # Record move to the text file
-    def record_move(self, move_type):
-        move =f"{'Black' if self.player == BLACK else 'White'} {move_type}"
-        board_state = ", ".join(map(str, self.board))
-        log = f"{move} | {board_state}"
-        self.move_file.write(log + "\n")
+        self.recording = False
+        self.moves = []
     
     # Switch the turn to the other player
     def change_turn(self):
@@ -81,20 +74,20 @@ class Board:
     def place_piece(self, pos):
         self.placed_piece += 1
         self.board[pos] = self.player
-        self.record_move(f"placed a piece at {pos}")
+        self.moves.append(f'Placing {pos} {self.player}\n')
 
     # Move a man from one position to another
     def move_piece(self, pos, to_pos):
         self.board[pos] = 0
         self.board[to_pos] = self.player
-        self.record_move(f"moved a piece from {pos} to {to_pos}")
+        self.moves.append(f'Moving {pos} to {to_pos} {self.player}\n')
 
     #  Remove a man from the board if a mill condition is met
     def remove_piece(self, pos):
 
         self.board[pos] = 0
         self.count_piece[0 if self.player == BLACK else 1] -= 1
-        self.record_move(f"removed a piece at {pos}")
+        self.moves.append(f'Removing {pos}\n')
 
     # Check if a mill condition is met at the given index for player 'p'
     def is_mill(self, index, p):
@@ -142,6 +135,18 @@ class Board:
             return True
         else:
             return False
+
+    # Save the game moves to a file
+    def save_recording(self):
+        counter = 1
+        while os.path.exists("Records/game_moves%s.txt" % counter):
+            counter += 1
+        while True:
+            save =  open(f"Records/game_moves{counter}.txt", "w")
+            for move in self.moves:
+                save.write(move)
+            save.close()
+            break
 
 # # Manual replay of the game
 # def manual_replay(board):

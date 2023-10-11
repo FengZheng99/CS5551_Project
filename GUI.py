@@ -181,6 +181,17 @@ def white_button(pos):
         pygame.draw.rect(SCREEN, (30, 30, 30), (620, 120, 100, 50))
     SCREEN.blit(small_text.render("White", True, (255, 255, 255)), (650, 135))
 
+def record_button(pos):
+    if board.recording == False:
+        if 30 + 100 > pos[0] > 30 and 400 + 50 > pos[1] > 400:
+            pygame.draw.rect(SCREEN, (60, 60, 60), (30, 400, 100, 50))
+        else:
+            pygame.draw.rect(SCREEN, (30, 30, 30), (30, 400, 100, 50))
+        SCREEN.blit(small_text.render("Record", True, (255, 255, 255)), (55, 415))
+    else:
+        pygame.draw.rect(SCREEN, (255, 0, 0), (30, 400, 100, 50))
+        SCREEN.blit(small_text.render("Recording", True, (0, 0, 0)), (48, 415))
+
 # Function to load a page to ask if the user wants to play again
 def play_again(board):
     again = True
@@ -202,6 +213,7 @@ def play_again(board):
 
                 # Click 'Yes' to play again
                 if 270 + 90 > mouse[0] > 270 and 385 + 50 > mouse[1] > 385:
+                    board.reset()
                     return False
                 # Click 'No' to quit the game
                 elif 515 + 90 > mouse[0] > 515 and 385 + 50 > mouse[1] > 385:
@@ -242,7 +254,7 @@ def game_settings():
     move_from = None
     human_mode = False
     computer_mode = False
-    mill = False
+    mill = False    
     place_piece_stage = False
     move_piece_stage = False
     black_flying = False
@@ -334,9 +346,13 @@ def mill_rule(board, mouse):
             if board.count_piece[1] <= 2:
                 print('111white win')
                 winning = True
+                if board.recording == True:
+                        board.save_recording()
             elif board.count_piece[0] <= 2:
                 print('111black win')
                 winning = True
+                if board.recording == True:
+                        board.save_recording()
 
             # check if adjacent point available, else game over
             if board.has_no_valid_moves():
@@ -346,6 +362,8 @@ def mill_rule(board, mouse):
                     print('11white win')
                 else:
                     print('11black win')
+                if board.recording == True:
+                        board.save_recording()
     print(board.board)
 
 # Function to handle the game rule of black flying
@@ -455,6 +473,8 @@ def place_piece_rule(board, mouse):
                         print('1white win')
                     else:
                         print('1black win')
+                    if board.recording == True:
+                        board.save_recording()
 
                 # Switch to move_piece stage
                 place_piece_stage = False
@@ -520,6 +540,8 @@ def move_piece_rule(board, mouse):
                         print('white win')
                     else:
                         print('black win')
+                    if board.recording == True:
+                        board.save_recording()
     print(board.board)
 
 # Main Function
@@ -570,6 +592,7 @@ def main():
             end_button(mouse)
             hvh_button(mouse)
             hvcomputer_button(mouse)
+            record_button(mouse)
             if board.player == 0 and (human_mode or computer_mode):
                 black_button(mouse)
                 white_button(mouse)
@@ -579,6 +602,8 @@ def main():
 
                 # Handle 'Quit' event
                 if event.type == pygame.QUIT:
+                    if board.recording == True:
+                        board.save_recording()
                     pygame.quit()
                     quit()
 
@@ -614,6 +639,13 @@ def main():
                     elif 620 + 100 > mouse[0] > 620 and 120 + 50 > mouse[1] > 120 and board.player == 0:
                         board.player = -1
                         print("White button clicked")
+
+                    # Check if the "Record" button is clicked
+                    elif 30 + 100 > mouse[0] > 30 and 400 + 50 > mouse[1] > 400:
+                        if board.recording == False:
+                            board.recording = True
+                        else:
+                            board.recording = False
 
                     elif 180 + 440 > mouse[0] > 180 and 30 + 440 > mouse[1] > 30 and board.player == 0:
                         print("ignore")
