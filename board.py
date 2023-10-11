@@ -1,8 +1,8 @@
 import time
 
 # Define constants for the game
-PLAYER_1 = 1
-PLAYER_2 = -1
+BLACK = 1
+WHITE = -1
 INITIAL_PIECES = 9
 
 # Mill combinations and adjacent points for each points map
@@ -53,9 +53,11 @@ class Board:
         self.move_file = open("game_moves.txt", "w")
 
     # Record move to the text file
-    def record_move(self, move):
-        move =f"Player{1 if self.player == PLAYER_1 else 2} {move}"
-        self.move_file.write(move + "\n")
+    def record_move(self, move_type):
+        move =f"{'Black' if self.player == BLACK else 'White'} {move_type}"
+        board_state = ", ".join(map(str, self.board))
+        log = f"{move} | {board_state}"
+        self.move_file.write(log + "\n")
     
     # Switch the turn to the other player
     def change_turn(self):
@@ -66,7 +68,7 @@ class Board:
         self.board = [0] * len(self.cord)
         self.player = 0
         self.placed_piece = 0
-        self.count_piece = [INITIAL_PIECES, INITIAL_PIECES] 
+        self.count_piece = [INITIAL_PIECES, INITIAL_PIECES]
         self.count_current_piece = [0, 0]
         self.mill_track = {
             'm1': 0, 'm2': 0, 'm3': 0, 'm4': 0,
@@ -79,20 +81,20 @@ class Board:
     def place_piece(self, pos):
         self.placed_piece += 1
         self.board[pos] = self.player
-        self.record_move(f"{self.player} placed a piece at {pos}")
+        self.record_move(f"placed a piece at {pos}")
 
     # Move a man from one position to another
     def move_piece(self, pos, to_pos):
         self.board[pos] = 0
         self.board[to_pos] = self.player
-        self.record_move(f"{self.player} moved a piece from {pos} to {to_pos}")
+        self.record_move(f"moved a piece from {pos} to {to_pos}")
 
     #  Remove a man from the board if a mill condition is met
     def remove_piece(self, pos):
 
         self.board[pos] = 0
-        self.count_piece[0 if self.player == PLAYER_1 else 1] -= 1
-        self.record_move(f"{self.player} removed a piece at {pos}")
+        self.count_piece[0 if self.player == BLACK else 1] -= 1
+        self.record_move(f"removed a piece at {pos}")
 
     # Check if a mill condition is met at the given index for player 'p'
     def is_mill(self, index, p):
@@ -141,44 +143,44 @@ class Board:
         else:
             return False
 
-# Manual replay of the game
-def manual_replay(board):
-    with open("game_move.txt", "r") as file:
-        moves = file.readlines()
+# # Manual replay of the game
+# def manual_replay(board):
+#     with open("game_move.txt", "r") as file:
+#         moves = file.readlines()
 
-    for move in moves:
-        input("Press Enter to execute the next move...")
-        move_data = move.strip().split()
-        player_label, action = move_data[0], move_data[1]
-        pos = int(move_data[-1])
+#     for move in moves:
+#         input("Press Enter to execute the next move...")
+#         move_data = move.strip().split()
+#         player_label, action = move_data[0], move_data[1]
+#         pos = int(move_data[-1])
 
-        if action == "placed":
-            board.place_piece(pos)
-        elif action == "moved":
-            from_pos = int(move_data[-3])
-            board.move_piece(from_pos, pos)
-        elif action == "removed":
-            board.remove_piece(pos)
-        print(Board.board)
-        board.change_turn()
+#         if action == "placed":
+#             board.place_piece(pos)
+#         elif action == "moved":
+#             from_pos = int(move_data[-3])
+#             board.move_piece(from_pos, pos)
+#         elif action == "removed":
+#             board.remove_piece(pos)
+#         print(Board.board)
+#         board.change_turn()
     
-# Automatic replay of the game
-def auto_replay(board, delay = 2):
-    with open("game_moves.txt", "r") as file:
-        moves = file.readlines()
+# # Automatic replay of the game
+# def auto_replay(board, delay = 2):
+#     with open("game_moves.txt", "r") as file:
+#         moves = file.readlines()
 
-    for move in moves:
-        time.sleep(delay)   # Delay between moves
-        move_data = move.strip().split()
-        action = move_data[1]
-        pos = int(move_data[-1])
+#     for move in moves:
+#         time.sleep(delay)   # Delay between moves
+#         move_data = move.strip().split()
+#         action = move_data[1]
+#         pos = int(move_data[-1])
 
-        if action == "placed":
-            board.place_piece(pos)
-        elif action == "moved":
-            from_pos = int(move_data[-3])
-            board.move_piece(from_pos, pos)
-        elif action == "removed":
-            board.remove_piece(pos)
-        board.change_turn()
+#         if action == "placed":
+#             board.place_piece(pos)
+#         elif action == "moved":
+#             from_pos = int(move_data[-3])
+#             board.move_piece(from_pos, pos)
+#         elif action == "removed":
+#             board.remove_piece(pos)
+#         board.change_turn()
 
