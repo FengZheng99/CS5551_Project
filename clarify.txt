@@ -1,1 +1,0 @@
-line 279 of GUI.py. what is the meaning of the condition set for checking if the game is in winning state

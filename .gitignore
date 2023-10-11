@@ -1,2 +1,9 @@
+# Cache
+**/__pycache__/
+
+# Record moves
+.txt
+
+#Misc
 .DS_Store
-__pycache__
+.vscode

@@ -1,6 +1,8 @@
 # Import standard libraries and custom board class
 import time
+
 import pygame
+
 from board import Board
 
 # testing branches
