@@ -16,7 +16,7 @@ __This project is aimed to develop a software simulation of the board game Nine 
 
 ## Testing
 
-__This project uses the xUnit framework for testing. To run tests, execute the following command:__
+__This project uses Pytest for testing. To run tests, execute the following command:__
 
 --- Provide later ---
 
