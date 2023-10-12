@@ -38,8 +38,7 @@ MILLS = {
             'm13': [16, 19, 22], 'm14': [8, 12, 17], 'm15': [5, 13, 20], 'm16': [2, 14, 23]
         }
 
-# Board class
-
+# Board class to represent the game board
 class Board:
 
     # Initialize the board with its dimensions, player states, and other attributes
@@ -54,7 +53,7 @@ class Board:
         self.recording = False
         self.moves = []
         self.auto_replay = False
-        self.manual_replay = False
+        self.replay = False
     
     # Switch the turn to the other player
     def change_turn(self):
@@ -78,20 +77,20 @@ class Board:
     def place_piece(self, pos):
         self.placed_piece += 1
         self.board[pos] = self.player
-        self.moves.append(f"{'Black' if self.player == BLACK else 'White'} placed a piece at {pos}\n")
+        self.moves.append(f"Place {pos} {self.player}\n")
 
     # Move a man from one position to another
     def move_piece(self, pos, to_pos):
         self.board[pos] = 0
         self.board[to_pos] = self.player
-        self.moves.append(f"{'Black' if self.player == BLACK else 'White'} moved a piece from {pos} to {to_pos}\n")
+        self.moves.append(f"Move {pos} {to_pos} {self.player}\n")
 
     #  Remove a man from the board if a mill condition is met
     def remove_piece(self, pos):
 
         self.board[pos] = 0
         self.count_piece[0 if self.player == BLACK else 1] -= 1
-        self.moves.append(f"{'Black' if self.player == BLACK else 'White'} removed a piece at {pos}\n")
+        self.moves.append(f"Remove {pos}\n")
 
     # Check if a mill condition is met at the given index for player 'p'
     def is_mill(self, index, p):
@@ -177,13 +176,6 @@ class Board:
         else:
             return None
                 
-    # Replaying the game manually
-    def replay_manually(self):
-        filename = self.choose_file()
-        with open(f"Records/{filename}") as f:
-            for line in f:
-                move = line.strip()
-                self.execute_move(move)
 
     # Replaying the game automatically
     def replay_automatically(self, delay):

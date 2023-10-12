@@ -1,12 +1,13 @@
-import pytest
 import pygame
-from board import Board
+import pytest
+
 import GUI as G
+from board import Board
 
 CORD = [(200, 50), (400, 50), (600, 50),
         (266, 116), (400, 116), (534, 116),
         (334, 184), (400, 184), (466, 184),
-        (200, 250), (266, 250), (334, 250), 
+        (200, 250), (266, 250), (334, 250),
         (466, 250), (534, 250), (600, 250),
         (334, 316), (400, 316), (466, 316),
         (266, 384), (400, 384), (534, 384),
@@ -20,14 +21,14 @@ MILL_TRACK = {
         'm13': 0, 'm14': 0, 'm15': 0, 'm16': 0
 }
 
-board = Board(CORD, MILL_TRACK)
-
 def test_change_turn():
+    board = Board(CORD, MILL_TRACK)
     board.player = 1
     board.change_turn()
     assert board.player == -1
 
 def test_successful_place_piece():
+    board = Board(CORD, MILL_TRACK)
     board.board = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     board.player = 1
     mouse = (200, 50)
@@ -35,6 +36,7 @@ def test_successful_place_piece():
     assert board.board[0] == 1
 
 def test_unsuccessful_place_piece():
+    board = Board(CORD, MILL_TRACK)
     board.board = [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     board.player = 1
     mouse = (200, 50)
@@ -42,6 +44,7 @@ def test_unsuccessful_place_piece():
     assert board.board[0] == -1
 
 def test_successful_move_piece():
+    board = Board(CORD, MILL_TRACK)
     board.board = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     board.player = 1
     global move_from
@@ -53,6 +56,7 @@ def test_successful_move_piece():
     assert board.board[1] == 1
 
 def test_unsuccessful_move_piece():
+    board = Board(CORD, MILL_TRACK)
     board.board = [1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     board.player = 1
     global move_from
@@ -64,6 +68,7 @@ def test_unsuccessful_move_piece():
     assert board.board[1] == -1
 
 def test_successful_fly_piece():
+    board = Board(CORD, MILL_TRACK)
     board.board = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     board.player = 1
     global move_from
@@ -75,6 +80,7 @@ def test_successful_fly_piece():
     assert board.board[23] == 1
 
 def test_unsuccessful_fly_piece():
+    board = Board(CORD, MILL_TRACK)
     board.board = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1]
     board.player = 1
     global move_from
@@ -86,6 +92,7 @@ def test_unsuccessful_fly_piece():
     assert board.board[23] == -1
 
 def test_successful_removal_of_an_opponent_piece():
+    board = Board(CORD, MILL_TRACK)
     board.board = [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1]
     board.player = 1
     board.mill_list(1)
@@ -94,6 +101,7 @@ def test_successful_removal_of_an_opponent_piece():
     assert board.board[23] == 0
 
 def test_unsuccessful_removal_of_an_opponent_piece_in_mill():
+    board = Board(CORD, MILL_TRACK)
     board.board = [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -1, -1]
     board.player = 1
     board.mill_list(1)
@@ -103,6 +111,7 @@ def test_unsuccessful_removal_of_an_opponent_piece_in_mill():
     assert board.board[23] == -1
 
 def test_successful_removal_of_an_opponent_piece_in_mill():
+    board = Board(CORD, MILL_TRACK)
     board.board = [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -1]
     board.player = 1
     board.mill_list(1)
@@ -112,6 +121,7 @@ def test_successful_removal_of_an_opponent_piece_in_mill():
     assert board.board[23] == 0
 
 def test_no_available_moves():
+    board = Board(CORD, MILL_TRACK)
     board.board = [1, -1, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     board.player = 1
     assert board.has_no_valid_moves()
