@@ -1,5 +1,7 @@
 import os
 import time
+import tkinter as tk
+from tkinter import filedialog
 
 # Define constants for the game
 BLACK = 1
@@ -51,6 +53,8 @@ class Board:
         self.count_current_piece = [0, 0] # Number of men on the board for each player
         self.recording = False
         self.moves = []
+        self.auto_replay = False
+        self.manual_replay = False
     
     # Switch the turn to the other player
     def change_turn(self):
@@ -74,20 +78,20 @@ class Board:
     def place_piece(self, pos):
         self.placed_piece += 1
         self.board[pos] = self.player
-        self.moves.append(f'Placing {pos} {self.player}\n')
+        self.moves.append(f"{'Black' if self.player == BLACK else 'White'} placed a piece at {pos}\n")
 
     # Move a man from one position to another
     def move_piece(self, pos, to_pos):
         self.board[pos] = 0
         self.board[to_pos] = self.player
-        self.moves.append(f'Moving {pos} to {to_pos} {self.player}\n')
+        self.moves.append(f"{'Black' if self.player == BLACK else 'White'} moved a piece from {pos} to {to_pos}\n")
 
     #  Remove a man from the board if a mill condition is met
     def remove_piece(self, pos):
 
         self.board[pos] = 0
         self.count_piece[0 if self.player == BLACK else 1] -= 1
-        self.moves.append(f'Removing {pos}\n')
+        self.moves.append(f"{'Black' if self.player == BLACK else 'White'} removed a piece at {pos}\n")
 
     # Check if a mill condition is met at the given index for player 'p'
     def is_mill(self, index, p):
@@ -139,53 +143,52 @@ class Board:
     # Save the game moves to a file
     def save_recording(self):
         counter = 1
-        while os.path.exists("Records/game_moves%s.txt" % counter):
+        while os.path.exists("Records/game_moves_%s.txt" % counter):
             counter += 1
         while True:
-            save =  open(f"Records/game_moves{counter}.txt", "w")
+            save =  open(f"Records/game_moves_{counter}.txt", "w")
             for move in self.moves:
                 save.write(move)
             save.close()
             break
 
-# # Manual replay of the game
-# def manual_replay(board):
-#     with open("game_move.txt", "r") as file:
-#         moves = file.readlines()
 
-#     for move in moves:
-#         input("Press Enter to execute the next move...")
-#         move_data = move.strip().split()
-#         player_label, action = move_data[0], move_data[1]
-#         pos = int(move_data[-1])
+    # List all available files to replay
+    def list_files(self):
+        files = os.listdir("Records")
+        if not files:
+            print("No records found.")
+            return
+        root = tk.Tk()
+        root.withdraw()
+        tk.messagebox.showinfo("Record Files", "\n".join(files))
 
-#         if action == "placed":
-#             board.place_piece(pos)
-#         elif action == "moved":
-#             from_pos = int(move_data[-3])
-#             board.move_piece(from_pos, pos)
-#         elif action == "removed":
-#             board.remove_piece(pos)
-#         print(Board.board)
-#         board.change_turn()
-    
-# # Automatic replay of the game
-# def auto_replay(board, delay = 2):
-#     with open("game_moves.txt", "r") as file:
-#         moves = file.readlines()
+    # Choose a file to replay
+    def choose_file(self):
+        files = os.listdir("Records")
+        if not files:
+            print("No records found.")
+            return None
+        root = tk.Tk()
+        root.withdraw()
+        filename = filedialog.askopenfilename(initialdir="Records", title="Select a record file", filetypes=(("Text files", "*.txt"),))
+        if filename:
+            return os.path.basename(filename)
+        else:
+            return None
+                
+    # Replaying the game manually
+    def replay_manually(self):
+        filename = self.choose_file()
+        with open(f"Records/{filename}") as f:
+            for line in f:
+                move = line.strip()
+                self.execute_move(move)
 
-#     for move in moves:
-#         time.sleep(delay)   # Delay between moves
-#         move_data = move.strip().split()
-#         action = move_data[1]
-#         pos = int(move_data[-1])
-
-#         if action == "placed":
-#             board.place_piece(pos)
-#         elif action == "moved":
-#             from_pos = int(move_data[-3])
-#             board.move_piece(from_pos, pos)
-#         elif action == "removed":
-#             board.remove_piece(pos)
-#         board.change_turn()
+    # Replaying the game automatically
+    def replay_automatically(self, delay):
+        filename = self.choose_file()
+        if filename:
+            self.replay_from_file(filename)
+            time.sleep(delay)
 
