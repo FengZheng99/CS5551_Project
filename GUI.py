@@ -141,6 +141,7 @@ def draw_board(board):
                 x = CORD[pos][0]
                 y = CORD[pos][1]
                 pygame.draw.circle(SCREEN, (0, 255, 0), (x, y), CIRCLE_SIZE + 5, 3)
+    pygame.display.update()
 
 # Function to draw the end game button
 def end_button(pos):
@@ -196,7 +197,7 @@ def record_button(pos):
 
 # Replay button
 def replay_button(pos):
-    if board.auto_replay == False:
+    if board.replay == False:
         if 30 + 100 > pos[0] > 30 and 340 + 50 > pos[1] > 340:
             pygame.draw.rect(SCREEN, (60, 60, 60), (30, 340, 100, 50))
         else:
@@ -208,6 +209,7 @@ def replay_button(pos):
 
 # Function to load a page to ask if the user wants to play again
 def play_again(board):
+    board.save_recording()
     again = True
     while again:
 
@@ -252,6 +254,28 @@ def play_again(board):
         SCREEN.blit(small_text.render("Yes", True, (255, 255, 255)), (300, 400))
         SCREEN.blit(small_text.render("No", True, (255, 255, 255)), (550, 400))
         pygame.display.update()
+
+# Function to replay the game
+def replaying(board):
+    with open("Records/game_moves_1.txt", "r") as f:
+        moves = f.readlines()
+    for move in moves:
+        move = move.strip('\n').split(' ')
+        if move[0] == 'Place':
+            board.player = int(move[2])
+            board.place_piece(int(move[1]))
+        elif move[0] == 'Move':
+            board.player = int(move[3])
+            board.move_piece(int(move[1]), int(move[2]))
+        elif move[0] == 'Remove':
+            board.remove_piece(int(move[1]))
+        else:
+            print("Invalid move")
+        if board.auto_replay == True:
+            time.sleep(1)
+        else:
+            input("Press any key to continue...")
+        draw_board(board)
 
 # Function to initiate game settings
 def game_settings():
@@ -636,7 +660,7 @@ def main():
                     if 20 + 30 > mouse[0] > 20 and 10 + 30 > mouse[1] > 10:
                         winning = True
                         board.player = 0
-
+                        
                     # Check if the human vs human button is clicked
                     elif 20 + 140 > mouse[0] > 20 and 50 + 50 > mouse[1] > 50:
                         hvh_settings(board)
@@ -668,12 +692,13 @@ def main():
                     
                     # Check if the "Replay" button is clicked
                     elif 30 + 100 > mouse[0] > 30 and 340 + 50 > mouse[1] > 340:
-                        if board.auto_replay == False and board.manual_replay == False:
+                        if board.replay == False:
+                            board.replay = True
                             board.auto_replay = True
-                            board.manual_replay = True
+                            replaying(board)
                         else:
                             board.auto_replay = False
-                            board.manual_replay = False
+                            board.replay = False
 
                     # Check if mouse clicked somewhere other than the available modes
                     elif not human_mode and not computer_mode:
@@ -701,7 +726,7 @@ def main():
 
             # Update the display
             draw_board(board)
-            pygame.display.update()
+
 
         # Check if the user wants to play again
         winning = play_again(board)
