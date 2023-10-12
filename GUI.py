@@ -1,15 +1,15 @@
 # Import standard libraries and custom board class
+import os
 import time
 
 import pygame
 
 from board import Board
 
-# testing branches
 # Initialize the font module
 pygame.font.init()
 
-# Font settings as global variables for text display to be called 
+# Font settings as global variables for text display to be called
 small_text = pygame.font.SysFont('Arial', 15)
 median_text = pygame.font.SysFont('Arial', 25)
 large_text = pygame.font.SysFont('Arial', 35)
@@ -19,7 +19,7 @@ winner_text = pygame.font.SysFont('Arial', 70)
 CORD = [(200, 50), (400, 50), (600, 50),
         (266, 116), (400, 116), (534, 116),
         (334, 184), (400, 184), (466, 184),
-        (200, 250), (266, 250), (334, 250), 
+        (200, 250), (266, 250), (334, 250),
         (466, 250), (534, 250), (600, 250),
         (334, 316), (400, 316), (466, 316),
         (266, 384), (400, 384), (534, 384),
@@ -194,6 +194,18 @@ def record_button(pos):
         pygame.draw.rect(SCREEN, (255, 0, 0), (30, 400, 100, 50))
         SCREEN.blit(small_text.render("Recording", True, (0, 0, 0)), (48, 415))
 
+# Replay button
+def replay_button(pos):
+    if board.auto_replay == False:
+        if 30 + 100 > pos[0] > 30 and 340 + 50 > pos[1] > 340:
+            pygame.draw.rect(SCREEN, (60, 60, 60), (30, 340, 100, 50))
+        else:
+            pygame.draw.rect(SCREEN, (30, 30, 30), (30, 340, 100, 50))
+        SCREEN.blit(small_text.render("Replay", True, (255, 255, 255)), (55, 355))
+    else:
+        pygame.draw.rect(SCREEN, (255, 0, 0), (30, 340, 100, 50))
+        SCREEN.blit(small_text.render("Replaying", True, (0, 0, 0)), (48, 355))
+
 # Function to load a page to ask if the user wants to play again
 def play_again(board):
     again = True
@@ -256,7 +268,7 @@ def game_settings():
     move_from = None
     human_mode = False
     computer_mode = False
-    mill = False    
+    mill = False
     place_piece_stage = False
     move_piece_stage = False
     black_flying = False
@@ -595,6 +607,7 @@ def main():
             hvh_button(mouse)
             hvcomputer_button(mouse)
             record_button(mouse)
+            replay_button(mouse)
             if board.player == 0 and (human_mode or computer_mode):
                 black_button(mouse)
                 white_button(mouse)
@@ -653,6 +666,15 @@ def main():
                         print("ignore")
                         continue
                     
+                    # Check if the "Replay" button is clicked
+                    elif 30 + 100 > mouse[0] > 30 and 340 + 50 > mouse[1] > 340:
+                        if board.auto_replay == False and board.manual_replay == False:
+                            board.auto_replay = True
+                            board.manual_replay = True
+                        else:
+                            board.auto_replay = False
+                            board.manual_replay = False
+
                     # Check if mouse clicked somewhere other than the available modes
                     elif not human_mode and not computer_mode:
                         continue

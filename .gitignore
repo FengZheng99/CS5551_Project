@@ -1,9 +1,9 @@
 # Cache
-**/__pycache__/
+__pycache__/
 
 # Record moves
 Records/
 
-#Misc
+# Misc
 .DS_Store
 .vscode
