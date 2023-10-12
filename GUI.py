@@ -48,6 +48,7 @@ CIRCLE_SIZE = 12 # Size of the circle markers
 
 non_removeble = []
 current_players_men = []
+move_from = None
 
 # Function to draw the game board and status information
 def draw_board(board):
@@ -181,6 +182,7 @@ def white_button(pos):
         pygame.draw.rect(SCREEN, (30, 30, 30), (620, 120, 100, 50))
     SCREEN.blit(small_text.render("White", True, (255, 255, 255)), (650, 135))
 
+# Function to draw the button for recording game
 def record_button(pos):
     if board.recording == False:
         if 30 + 100 > pos[0] > 30 and 400 + 50 > pos[1] > 400:
