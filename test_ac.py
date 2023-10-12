@@ -21,15 +21,15 @@ MILL_TRACK = {
         'm13': 0, 'm14': 0, 'm15': 0, 'm16': 0
 }
 
-board = Board(CORD, MILL_TRACK)
-
-class Test:
+class TestACs:
     def test_change_turn(self):
+        board = Board(CORD, MILL_TRACK)
         board.player = 1
         board.change_turn()
         assert board.player == -1
 
     def test_successful_place_piece(self):
+        board = Board(CORD, MILL_TRACK)
         board.board = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         board.player = 1
         mouse = (200, 50)
@@ -37,6 +37,7 @@ class Test:
         assert board.board[0] == 1
 
     def test_unsuccessful_place_piece(self):
+        board = Board(CORD, MILL_TRACK)
         board.board = [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         board.player = 1
         mouse = (200, 50)
@@ -44,6 +45,7 @@ class Test:
         assert board.board[0] == -1
 
     def test_successful_move_piece(self):
+        board = Board(CORD, MILL_TRACK)
         board.board = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         board.player = 1
         global move_from
@@ -55,6 +57,7 @@ class Test:
         assert board.board[1] == 1
 
     def test_unsuccessful_move_piece(self):
+        board = Board(CORD, MILL_TRACK)
         board.board = [1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         board.player = 1
         global move_from
@@ -66,6 +69,7 @@ class Test:
         assert board.board[1] == -1
 
     def test_successful_fly_piece(self):
+        board = Board(CORD, MILL_TRACK)
         board.board = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         board.player = 1
         global move_from
@@ -77,6 +81,7 @@ class Test:
         assert board.board[23] == 1
 
     def test_unsuccessful_fly_piece(self):
+        board = Board(CORD, MILL_TRACK)
         board.board = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1]
         board.player = 1
         global move_from
@@ -88,6 +93,7 @@ class Test:
         assert board.board[23] == -1
 
     def test_successful_removal_of_an_opponent_piece(self):
+        board = Board(CORD, MILL_TRACK)
         board.board = [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1]
         board.player = 1
         board.mill_list(1)
@@ -96,6 +102,7 @@ class Test:
         assert board.board[23] == 0
 
     def test_unsuccessful_removal_of_an_opponent_piece_in_mill(self):
+        board = Board(CORD, MILL_TRACK)
         board.board = [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -1, -1]
         board.player = 1
         board.mill_list(1)
@@ -105,6 +112,7 @@ class Test:
         assert board.board[23] == -1
 
     def test_successful_removal_of_an_opponent_piece_in_mill(self):
+        board = Board(CORD, MILL_TRACK)
         board.board = [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -1]
         board.player = 1
         board.mill_list(1)
@@ -114,6 +122,7 @@ class Test:
         assert board.board[23] == 0
 
     def test_no_available_moves(self):
+        board = Board(CORD, MILL_TRACK)
         board.board = [1, -1, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         board.player = 1
         assert board.has_no_valid_moves()
