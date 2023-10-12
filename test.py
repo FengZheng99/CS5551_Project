@@ -22,97 +22,98 @@ MILL_TRACK = {
 
 board = Board(CORD, MILL_TRACK)
 
-def test_change_turn():
-    board.player = 1
-    board.change_turn()
-    assert board.player == -1
+class Test:
+    def test_change_turn(self):
+        board.player = 1
+        board.change_turn()
+        assert board.player == -1
 
-def test_successful_place_piece():
-    board.board = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    board.player = 1
-    mouse = (200, 50)
-    G.place_piece_rule(board, mouse)
-    assert board.board[0] == 1
+    def test_successful_place_piece(self):
+        board.board = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        board.player = 1
+        mouse = (200, 50)
+        G.place_piece_rule(board, mouse)
+        assert board.board[0] == 1
 
-def test_unsuccessful_place_piece():
-    board.board = [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    board.player = 1
-    mouse = (200, 50)
-    G.place_piece_rule(board, mouse)
-    assert board.board[0] == -1
+    def test_unsuccessful_place_piece(self):
+        board.board = [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        board.player = 1
+        mouse = (200, 50)
+        G.place_piece_rule(board, mouse)
+        assert board.board[0] == -1
 
-def test_successful_move_piece():
-    board.board = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    board.player = 1
-    global move_from
-    move_from = None
-    mouse = (200, 50)
-    G.move_piece_rule(board, mouse)
-    mouse = (400, 50)
-    G.move_piece_rule(board, mouse)
-    assert board.board[1] == 1
+    def test_successful_move_piece(self):
+        board.board = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        board.player = 1
+        global move_from
+        move_from = None
+        mouse = (200, 50)
+        G.move_piece_rule(board, mouse)
+        mouse = (400, 50)
+        G.move_piece_rule(board, mouse)
+        assert board.board[1] == 1
 
-def test_unsuccessful_move_piece():
-    board.board = [1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    board.player = 1
-    global move_from
-    move_from = None
-    mouse = (200, 50)
-    G.move_piece_rule(board, mouse)
-    mouse = (400, 50)
-    G.move_piece_rule(board, mouse)
-    assert board.board[1] == -1
+    def test_unsuccessful_move_piece(self):
+        board.board = [1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        board.player = 1
+        global move_from
+        move_from = None
+        mouse = (200, 50)
+        G.move_piece_rule(board, mouse)
+        mouse = (400, 50)
+        G.move_piece_rule(board, mouse)
+        assert board.board[1] == -1
 
-def test_successful_fly_piece():
-    board.board = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    board.player = 1
-    global move_from
-    move_from = None
-    mouse = (200, 50)
-    G.black_fly_rule(board, mouse)
-    mouse = (600, 450)
-    G.black_fly_rule(board, mouse)
-    assert board.board[23] == 1
+    def test_successful_fly_piece(self):
+        board.board = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        board.player = 1
+        global move_from
+        move_from = None
+        mouse = (200, 50)
+        G.black_fly_rule(board, mouse)
+        mouse = (600, 450)
+        G.black_fly_rule(board, mouse)
+        assert board.board[23] == 1
 
-def test_unsuccessful_fly_piece():
-    board.board = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1]
-    board.player = 1
-    global move_from
-    move_from = None
-    mouse = (200, 50)
-    G.black_fly_rule(board, mouse)
-    mouse = (600, 450)
-    G.black_fly_rule(board, mouse)
-    assert board.board[23] == -1
+    def test_unsuccessful_fly_piece(self):
+        board.board = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1]
+        board.player = 1
+        global move_from
+        move_from = None
+        mouse = (200, 50)
+        G.black_fly_rule(board, mouse)
+        mouse = (600, 450)
+        G.black_fly_rule(board, mouse)
+        assert board.board[23] == -1
 
-def test_successful_removal_of_an_opponent_piece():
-    board.board = [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1]
-    board.player = 1
-    board.mill_list(1)
-    mouse = (600, 450)
-    G.mill_rule(board, mouse)
-    assert board.board[23] == 0
+    def test_successful_removal_of_an_opponent_piece(self):
+        board.board = [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1]
+        board.player = 1
+        board.mill_list(1)
+        mouse = (600, 450)
+        G.mill_rule(board, mouse)
+        assert board.board[23] == 0
 
-def test_unsuccessful_removal_of_an_opponent_piece_in_mill():
-    board.board = [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -1, -1]
-    board.player = 1
-    board.mill_list(1)
-    board.mill_list(-1)
-    mouse = (600, 450)
-    G.mill_rule(board, mouse)
-    assert board.board[23] == -1
+    def test_unsuccessful_removal_of_an_opponent_piece_in_mill(self):
+        board.board = [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -1, -1]
+        board.player = 1
+        board.mill_list(1)
+        board.mill_list(-1)
+        mouse = (600, 450)
+        G.mill_rule(board, mouse)
+        assert board.board[23] == -1
 
-def test_successful_removal_of_an_opponent_piece_in_mill():
-    board.board = [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -1]
-    board.player = 1
-    board.mill_list(1)
-    board.mill_list(-1)
-    mouse = (600, 450)
-    G.mill_rule(board, mouse)
-    assert board.board[23] == 0
+    def test_successful_removal_of_an_opponent_piece_in_mill(self):
+        board.board = [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -1]
+        board.player = 1
+        board.mill_list(1)
+        board.mill_list(-1)
+        mouse = (600, 450)
+        G.mill_rule(board, mouse)
+        assert board.board[23] == 0
 
-def test_no_available_moves():
-    board.board = [1, -1, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    board.player = 1
-    assert board.has_no_valid_moves()
+    def test_no_available_moves(self):
+        board.board = [1, -1, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        board.player = 1
+        assert board.has_no_valid_moves()
 
