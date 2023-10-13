@@ -1,8 +1,10 @@
 # Cache
 __pycache__/
+.pytest_cache/
 
 # Record moves
-Records/
+Records/*
+!Records/.gitkeep
 
 # Misc
 .DS_Store
