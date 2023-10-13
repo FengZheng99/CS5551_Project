@@ -6,7 +6,7 @@ import pytest
 from board import Board
 
 
-class TestSaveRecording:
+class TestBoard:
     def test_creation(self):
         board = Board("dummy_cord", "dummy_mill_track")
         board.moves = ["move1", "move2", "move3"]
@@ -37,3 +37,9 @@ class TestSaveRecording:
             
             mock_file.assert_called_once_with("Records/game_moves_1.txt", "w")
             mock_file.return_value.write.assert_has_calls([call('move1'), call('move2'), call('move3')])
+            
+    def test_automatic_turn_switch(self):
+        game = Board("dummy_cord", "dummy_mill_track")
+        game.player = 1
+        game.change_turn()
+        assert game.player == -1
