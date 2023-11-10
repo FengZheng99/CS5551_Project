@@ -129,7 +129,21 @@ class Board:
             return False
         
     def game_over(self):
-        self.move_file.close()
+        # Flag to indicate if the file needs to be closed
+        should_close_file = False
+        self.move_file.closed = False
+        # Check if the current player has fewer than three pieces on the board
+        if self.count_current_piece[0 if self.player == BLACK else 1] < 3:
+            print(f"Player {self.player} has fewer than three pieces.")
+            should_close_file = True
+        # Check if the current player has no legal moves left
+        if self.has_no_valid_moves():
+            print(f"Player {self.player} has no valid moves.")
+            should_close_file = True
+        # Close the move_file if it needs to be closed and it's not already closed
+        if should_close_file and not self.move_file.closed:
+            self.move_file.close()
+        return False
 
     # Check if a click is within a clickable area around a coordinate 'cor'.
     def clickable(self, cor, m, size):
