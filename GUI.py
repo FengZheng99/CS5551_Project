@@ -66,13 +66,26 @@ current_players_men = []
 move_from = None
 
 def computer_move(board):
+    global winning
+
     # Phase 1: Placing pieces
     if board.placed_piece < 18:
-        board.place_random_piece()
+        place_random_piece(board)
 
     # Phase 2: Moving pieces
-    else:
-        board.move_random_piece()
+    elif board.count_piece[1] > 3:
+        move_random_piece(board)
+
+    # Phase 3: Flying pieces
+    elif board.count_piece[1] == 3:
+        fly_random_piece(board)
+
+    if board.count_piece[0] <= 2:
+        print('111black win')
+        winning = True
+        if board.recording == True:
+                board.save_recording()
+
 
 def place_random_piece(board):
     # Find all empty positions
@@ -81,49 +94,203 @@ def place_random_piece(board):
     global available_adj
     available_adj = []
 
-    for index, item in board.board:
+    for index, item in enumerate(board.board):
         if item == board.player:
-            available_adj.append(ADJACENT_MAP[index])
-            
-    print(valid_positions)
-    # Randomly choose a position to place a piece
+            for a in ADJACENT_MAP[index]:
+                if board.board[a] == 0:
+                    available_adj.append(a)
+
+    global available_mill
+    available_mill = []
+
+    for index in available_adj:
+        for mill_key, mill_value in MILLS.items():
+            if index in mill_value:
+                if (board.board[mill_value[0]] + board.board[mill_value[1]] + board.board[mill_value[2]]) == 2:
+                    available_mill.append(index)
+  
+    # Randomly choose a position to place a piece at the start
     if valid_positions and board.placed_piece == 0:
         pos = random.choice(valid_positions)
         board.place_piece(pos)
-        print("aaaaaaaa")
-        print(available_adj)
         # Check for mill formation and remove a piece if formed
         if board.is_mill(pos, board.player):
-            board.remove_opponent_piece()
-            
-    # elif valid_positions and
-    
+            remove_opponent_piece(board)
+
+    # Randomly choose an adjacent position to place a piece to form a mill
+    elif available_mill:
+        pos = random.choice(available_mill)
+        board.place_piece(pos)
+        # Check for mill formation and remove a piece if formed
+        if board.is_mill(pos, board.player):
+            remove_opponent_piece(board)
+
+    # Randomly choose an adjacent position to place a piece if a mill is not possible
+    elif available_adj:
+        pos = random.choice(available_adj)
+        board.place_piece(pos)
+        # Check for mill formation and remove a piece if formed
+        if board.is_mill(pos, board.player):
+            remove_opponent_piece(board)
+
+    # Randomly choose an position to place a piece if no adjacent is available
+    elif valid_positions:
+        pos = random.choice(valid_positions)
+        board.place_piece(pos)
+        # Check for mill formation and remove a piece if formed
+        if board.is_mill(pos, board.player):
+            remove_opponent_piece(board)
+               
 
 def move_random_piece(board):
     # Find all possible moves for the computer's pieces
     valid_moves = [(i, adj) for i in range(len(board.board)) if board.board[i] == board.player
-                for adj in board.adjacent_pos(i) if board.board[adj] == 0]
+                   for adj in board.adjacent_pos(i) if board.board[adj] == 0]
+    
+    global available_adj
+    available_adj = []
 
-    # Randomly choose a move
-    if valid_moves:
+    for index, item in enumerate(board.board):
+        if item == board.player:
+            for a in ADJACENT_MAP[index]:
+                if board.board[a] == 0:
+                    available_adj.append(a)
+
+    global available_mill
+    available_mill = []
+
+    for index in available_adj:
+        for mill_key, mill_value in MILLS.items():
+            if index in mill_value:
+                if (board.board[mill_value[0]] + board.board[mill_value[1]] + board.board[mill_value[2]]) == 2:
+                    available_mill.append(index)
+
+    mill_moves = []
+    adj_moves = []
+
+    for from_pos, to_pos in valid_moves:
+        for mill_key, mill_value in MILLS.items():
+            if to_pos in available_mill and to_pos in mill_value and from_pos not in mill_value:
+                mill_moves.append((from_pos, to_pos))
+        if to_pos in available_adj:
+            adj_moves.append((from_pos, to_pos))
+
+    # Randomly choose a move, prioritizing mills and adjacents if possible 
+    if mill_moves:
+        from_pos, to_pos = random.choice(mill_moves)
+        board.move_piece(from_pos, to_pos)
+
+        # Check for mill formation and remove a piece if formed
+        if board.is_mill(to_pos, board.player):
+            remove_opponent_piece(board)
+    
+    elif adj_moves:
+        from_pos, to_pos = random.choice(adj_moves)
+        board.move_piece(from_pos, to_pos)
+
+        # Check for mill formation and remove a piece if formed
+        if board.is_mill(to_pos, board.player):
+            remove_opponent_piece(board)
+
+    elif valid_moves:
         from_pos, to_pos = random.choice(valid_moves)
         board.move_piece(from_pos, to_pos)
 
         # Check for mill formation and remove a piece if formed
         if board.is_mill(to_pos, board.player):
-            board.remove_opponent_piece()
+            remove_opponent_piece(board)
+
+
+def fly_random_piece(board):
+    # Find all possible flies for the computer's pieces
+    valid_moves = [(i, adj) for i in range(len(board.board)) if board.board[i] == board.player
+                   for adj in range(len(board.board)) if board.board[adj] == 0]
+    
+    global available_adj
+    available_adj = []
+
+    for index, item in enumerate(board.board):
+        if item == board.player:
+            for a in ADJACENT_MAP[index]:
+                if board.board[a] == 0:
+                    available_adj.append(a)
+
+    global available_mill
+    available_mill = []
+
+    for index in available_adj:
+        for mill_key, mill_value in MILLS.items():
+            if index in mill_value:
+                if (board.board[mill_value[0]] + board.board[mill_value[1]] + board.board[mill_value[2]]) == 2:
+                    available_mill.append(index)
+
+    mill_moves = []
+    adj_moves = []
+
+    for from_pos, to_pos in valid_moves:
+        for mill_key, mill_value in MILLS.items():
+            if to_pos in available_mill and to_pos in mill_value and from_pos not in mill_value:
+                mill_moves.append((from_pos, to_pos))
+        if to_pos in available_adj:
+            adj_moves.append((from_pos, to_pos))
+
+    # Randomly choose a fly, prioritizing mills and adjacents if possible 
+    if mill_moves:
+        from_pos, to_pos = random.choice(mill_moves)
+        board.move_piece(from_pos, to_pos)
+
+        # Check for mill formation and remove a piece if formed
+        if board.is_mill(to_pos, board.player):
+            remove_opponent_piece(board)
+    
+    elif adj_moves:
+        from_pos, to_pos = random.choice(adj_moves)
+        board.move_piece(from_pos, to_pos)
+
+        # Check for mill formation and remove a piece if formed
+        if board.is_mill(to_pos, board.player):
+            remove_opponent_piece(board)
+
+    elif valid_moves:
+        from_pos, to_pos = random.choice(valid_moves)
+        board.move_piece(from_pos, to_pos)
+
+        # Check for mill formation and remove a piece if formed
+        if board.is_mill(to_pos, board.player):
+            remove_opponent_piece(board)
+
 
 def remove_opponent_piece(board):
     # Choose a random opponent piece that is not in a mill
-    opponent_pieces = [i for i, x in enumerate(board.board) if x == -board.player]
-    non_mill_opponent_pieces = [p for p in opponent_pieces if not board.is_mill(p, -board.player)]
-    
-    if non_mill_opponent_pieces:
-        piece_to_remove = random.choice(non_mill_opponent_pieces)
-    elif opponent_pieces:
-        piece_to_remove = random.choice(opponent_pieces)
 
-        board.remove_piece(piece_to_remove)
+    global non_removeble
+    non_removeble = []
+
+    for mill_key, mill_value in MILLS.items():
+        if MILL_TRACK[mill_key] == board.player * -1:
+            for pos in mill_value:
+                non_removeble.append(pos)
+
+    global current_players_men
+    current_players_men = []
+    
+    for position, man in enumerate(board.board):
+        if man == board.player * -1:
+            current_players_men.append(position)
+
+    removable = [number for number in current_players_men if number not in non_removeble]
+
+    if removable:
+        piece_to_remove = random.choice(removable)
+    elif current_players_men:
+        piece_to_remove = random.choice(current_players_men)
+        
+    board.remove_piece(piece_to_remove)
+
+    global white_flying
+    if board.count_piece[0] == 3:
+        white_flying = True
+
 # Function to draw the game board and status information
 def draw_board(board):
 
@@ -739,7 +906,7 @@ def main():
                 if board.player == 0:
                     board.player = COMPUTER
                 if board.player == COMPUTER:
-                    board.computer_move()
+                    computer_move(board)
                     board.player = -board.player
                 
 
