@@ -1,4 +1,5 @@
 import os
+import random
 import time
 import tkinter as tk
 from tkinter import filedialog
@@ -54,6 +55,11 @@ class Board:
         self.moves = []
         self.auto_replay = False
         self.replay = False
+        self.forward = False
+        self.backward = False
+        self.replay_moves = [] # List to store the moves for replay
+        self.current_replay_index = 0  # Index to track the current move in the replay
+
     
     # Switch the turn to the other player
     def change_turn(self):
@@ -165,36 +171,105 @@ class Board:
             save.close()
             break
 
-
-    # List all available files to replay
-    def list_files(self):
-        files = os.listdir("Records")
-        if not files:
-            print("No records found.")
-            return
-        root = tk.Tk()
-        root.withdraw()
-        tk.messagebox.showinfo("Record Files", "\n".join(files))
-
-    # Choose a file to replay
-    def choose_file(self):
-        files = os.listdir("Records")
-        if not files:
-            print("No records found.")
-            return None
-        root = tk.Tk()
-        root.withdraw()
-        filename = filedialog.askopenfilename(initialdir="Records", title="Select a record file", filetypes=(("Text files", "*.txt"),))
-        if filename:
-            return os.path.basename(filename)
-        else:
-            return None
-                
-
     # Replaying the game automatically
     def replay_automatically(self, delay):
         filename = self.choose_file()
         if filename:
             self.replay_from_file(filename)
             time.sleep(delay)
+
+    def execute_move(board, move):
+        if move[0] == 'Place':
+            board.player = int(move[2])
+            board.place_piece(int(move[1]))
+        elif move[0] == 'Move':
+            board.player = int(move[3])
+            board.move_piece(int(move[1]), int(move[2]))
+        elif move[0] == 'Remove':
+            board.remove_piece(int(move[1]))
+        else:
+            print("Invalid move")
+
+    # Replaying manually
+    def load_replay_moves(self, filename):
+            with open(filename, 'r') as file:
+                self.replay_moves = [line.strip() for line in file.readlines()]
+            self.current_replay_index = 0
+
+    def forward_replay(self):
+        if self.current_replay_index < len(self.replay_moves):
+            self.execute_move(self.replay_moves[self.current_replay_index])
+            self.current_replay_index += 1
+
+    def backward_replay(self):
+        if self.current_replay_index > 0:
+            self.current_replay_index -= 1
+            self.reset()
+            for i in range(self.current_replay_index):
+                self.execute_move(self.replay_moves[i])
+
+    # def execute_move(self, move):
+    #     move = move.split(' ')
+    #     if move[0] == 'Place':
+    #         self.player = int(move[2])
+    #         self.place_piece(int(move[1]))
+    #     elif move[0] == 'Move':
+    #         self.player = int(move[3])
+    #         self.move_piece(int(move[1]), int(move[2]))
+    #     elif move[0] == 'Remove':
+    #         self.remove_piece(int(move[1]))
+
+    # Computer
+    def computer_move(self):
+        # Phase 1: Placing pieces
+        if self.placed_piece < 18:
+            self.place_random_piece()
+
+        # Phase 2: Moving pieces
+        else:
+            self.move_random_piece()
+
+    def place_random_piece(self):
+        # Find all empty positions
+        valid_positions = [i for i, x in enumerate(self.board) if x == 0]
+
+        # Randomly choose a position to place a piece
+        if valid_positions:
+            pos = random.choice(valid_positions)
+            self.place_piece(pos)
+
+            # Check for mill formation and remove a piece if formed
+            if self.is_mill(pos, self.player):
+                self.remove_opponent_piece()
+
+    def move_random_piece(self):
+        # Find all possible moves for the computer's pieces
+        valid_moves = [(i, adj) for i in range(len(self.board)) if self.board[i] == self.player
+                    for adj in self.adjacent_pos(i) if self.board[adj] == 0]
+
+        # Randomly choose a move
+        if valid_moves:
+            from_pos, to_pos = random.choice(valid_moves)
+            self.move_piece(from_pos, to_pos)
+
+            # Check for mill formation and remove a piece if formed
+            if self.is_mill(to_pos, self.player):
+                self.remove_opponent_piece()
+
+    def remove_opponent_piece(self):
+        # Choose a random opponent piece that is not in a mill
+        opponent_pieces = [i for i, x in enumerate(self.board) if x == -self.player]
+        non_mill_opponent_pieces = [p for p in opponent_pieces if not self.is_mill(p, -self.player)]
+        
+        if non_mill_opponent_pieces:
+            piece_to_remove = random.choice(non_mill_opponent_pieces)
+        elif opponent_pieces:
+            piece_to_remove = random.choice(opponent_pieces)
+
+        self.remove_piece(piece_to_remove)
+
+
+
+
+
 
