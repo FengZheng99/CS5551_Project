@@ -109,7 +109,7 @@ def place_random_piece(board):
             if index in mill_value:
                 if (board.board[mill_value[0]] + board.board[mill_value[1]] + board.board[mill_value[2]]) == 2:
                     available_mill.append(index)
-  
+
     # Randomly choose a position to place a piece at the start
     if valid_positions and board.placed_piece == 0:
         pos = random.choice(valid_positions)
@@ -141,7 +141,6 @@ def place_random_piece(board):
         # Check for mill formation and remove a piece if formed
         if board.is_mill(pos, board.player):
             remove_opponent_piece(board)
-               
 
 def move_random_piece(board):
     # Find all possible moves for the computer's pieces
@@ -450,19 +449,6 @@ def replay_button(pos):
         pygame.draw.rect(SCREEN, (255, 0, 0), (30, 340, 100, 50))
         SCREEN.blit(small_text.render("Replaying", True, (0, 0, 0)), (48, 355))
         
-def replay_file_button(pos):
-    button_width = 50
-    button_height = 50
-    button_x = 30 + (100 - button_width) // 2
-    button_y = 340 - button_height - 10  # 10 pixels above the "Replay" button
-
-    if button_x + button_width > pos[0] > button_x and button_y + button_height > pos[1] > button_y:
-        pygame.draw.rect(SCREEN, (60, 60, 60), (button_x, button_y, button_width, button_height))
-    else:
-        pygame.draw.rect(SCREEN, (30, 30, 30), (button_x, button_y, button_width, button_height))
-
-    SCREEN.blit(small_text.render(" Files", True, (255, 255, 255)), (button_x + 5, button_y + 15))
-
 def forward_button(pos):
     if 620 + 100 > pos[0] > 620 and 340 + 50 > pos[1] > 340:
         pygame.draw.rect(SCREEN, (60, 60, 60), (620, 340, 100, 50))
@@ -525,39 +511,16 @@ def play_again(board):
         SCREEN.blit(small_text.render("No", True, (255, 255, 255)), (550, 400))
         pygame.display.update()
 
-def display_replay_menu(screen, replay_files):
-    font = pygame.font.Font(None, 36)
-    menu_items = []
-    for i, file in enumerate(replay_files):
-        text = font.render(file, True, (0, 0, 0))
-        text_rect = text.get_rect(center=(screen.get_width() // 2, 100 + 30 * i))
-        screen.blit(text, text_rect)
-        menu_items.append((text, text_rect))
-
-    pygame.display.flip()
-    return menu_items
-
-def choose_replay_file(screen):
-    replay_files = board.get_replay_files()
-    menu_items = display_replay_menu(screen, replay_files)
-
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
-            elif event.type == pygame.MOUSEBUTTONUP:
-                mouse_pos = pygame.mouse.get_pos()
-                for file, rect in menu_items:
-                    if rect.collidepoint(mouse_pos):
-                        return "Records/" + file.get_text()
-
-        pygame.display.flip()
-
 
 # Function to auto replay the game
 def replaying(board):
-    with open("Records/game_moves_1.txt", "r") as f:
+    
+    directory = "Records/"
+    files = os.listdir(directory)
+    files.sort()
+    last_file = files[-1] if files else None
+    
+    with open(os.path.join(directory, last_file), 'r') as f:
         moves = f.readlines()
         
     for move in moves:
@@ -579,7 +542,12 @@ def replaying(board):
         
 # Replay manually
 def load_replay_moves(filename):
-    with open(filename, "r") as f:
+    directory = "Records/"
+    files = os.listdir(directory)
+    files.sort()
+    last_file = files[-1] if files else None
+    
+    with open(os.path.join(directory, last_file), 'r') as f:
         return [line.strip('\n').split(' ') for line in f.readlines()]
 
 def execute_move(board, move):
@@ -966,7 +934,6 @@ def main():
             replay_button(mouse)
             forward_button(mouse)
             backward_button(mouse)
-            replay_file_button(mouse)
             
             if human_mode:
                 if board.player == 0:
@@ -1007,6 +974,7 @@ def main():
                         winning = True
                         board.player = 0
                         
+                        
                     # Check if the human vs human button is clicked
                     elif 20 + 140 > mouse[0] > 20 and 50 + 50 > mouse[1] > 50:
                         hvh_settings(board)
@@ -1029,6 +997,7 @@ def main():
                     elif 30 + 100 > mouse[0] > 30 and 400 + 50 > mouse[1] > 400:
                         if board.recording == False:
                             board.recording = True
+
                         else:
                             board.recording = False
 
