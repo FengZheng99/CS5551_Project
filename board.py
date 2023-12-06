@@ -1,8 +1,6 @@
 import os
 import random
 import time
-import tkinter as tk
-from tkinter import filedialog
 
 # Define constants for the game
 BLACK = 1
@@ -59,7 +57,6 @@ class Board:
         self.backward = False
         self.replay_moves = [] # List to store the moves for replay
         self.current_replay_index = 0  # Index to track the current move in the replay
-
     
     # Switch the turn to the other player
     def change_turn(self):
@@ -170,6 +167,10 @@ class Board:
                 save.write(move)
             save.close()
             break
+        
+    # List replay files
+    def get_replay_files(directory="Records"):
+        return [f for f in os.listdir(directory) if f.endswith('.txt') and f.startswith("game_moves_")]
 
     # Replaying the game automatically
     def replay_automatically(self, delay):
@@ -178,43 +179,4 @@ class Board:
             self.replay_from_file(filename)
             time.sleep(delay)
 
-    def execute_move(board, move):
-        if move[0] == 'Place':
-            board.player = int(move[2])
-            board.place_piece(int(move[1]))
-        elif move[0] == 'Move':
-            board.player = int(move[3])
-            board.move_piece(int(move[1]), int(move[2]))
-        elif move[0] == 'Remove':
-            board.remove_piece(int(move[1]))
-        else:
-            print("Invalid move")
 
-    # Replaying manually
-    def load_replay_moves(self, filename):
-            with open(filename, 'r') as file:
-                self.replay_moves = [line.strip() for line in file.readlines()]
-            self.current_replay_index = 0
-
-    def forward_replay(self):
-        if self.current_replay_index < len(self.replay_moves):
-            self.execute_move(self.replay_moves[self.current_replay_index])
-            self.current_replay_index += 1
-
-    def backward_replay(self):
-        if self.current_replay_index > 0:
-            self.current_replay_index -= 1
-            self.reset()
-            for i in range(self.current_replay_index):
-                self.execute_move(self.replay_moves[i])
-
-    # def execute_move(self, move):
-    #     move = move.split(' ')
-    #     if move[0] == 'Place':
-    #         self.player = int(move[2])
-    #         self.place_piece(int(move[1]))
-    #     elif move[0] == 'Move':
-    #         self.player = int(move[3])
-    #         self.move_piece(int(move[1]), int(move[2]))
-    #     elif move[0] == 'Remove':
-    #         self.remove_piece(int(move[1]))
