@@ -1,5 +1,6 @@
 # Import standard libraries and custom board class
 import os
+import random
 import time
 
 import pygame
@@ -33,6 +34,17 @@ MILL_TRACK = {
         'm13': 0, 'm14': 0, 'm15': 0, 'm16': 0
 }
 
+ADJACENT_MAP = {
+            0: [1, 9], 1: [0, 2, 4], 2: [1, 14],
+            3: [4, 10], 4: [1, 3, 5, 7], 5: [4, 13],
+            6: [7, 11], 7: [4, 6, 8], 8: [7, 12],
+            9: [0, 10, 21], 10: [3, 9, 11, 18], 11: [6, 10, 15],
+            12: [8, 13, 17], 13: [5, 12, 14, 20], 14: [2, 13, 23],
+            15: [11, 16], 16: [15, 17, 19], 17: [12, 16],
+            18: [10, 19], 19: [16, 18, 20, 22], 20: [13, 19],
+            21: [9, 22], 22: [19, 21, 23], 23: [14, 22],
+        }
+
 MILLS = {
             'm1': [0, 1, 2], 'm2': [3, 4, 5], 'm3': [6, 7, 8], 'm4': [9, 10, 11],
             'm5': [12, 13, 14], 'm6': [15, 16, 17], 'm7': [18, 19, 20], 'm8': [21, 22, 23],
@@ -46,10 +58,72 @@ SCREEN = pygame.display.set_mode([900, 500])
 # Define game settings
 CIRCLE_SIZE = 12 # Size of the circle markers
 
+HUMAN = -1
+COMPUTER = 1
+
 non_removeble = []
 current_players_men = []
 move_from = None
 
+def computer_move(board):
+    # Phase 1: Placing pieces
+    if board.placed_piece < 18:
+        board.place_random_piece()
+
+    # Phase 2: Moving pieces
+    else:
+        board.move_random_piece()
+
+def place_random_piece(board):
+    # Find all empty positions
+    valid_positions = [i for i, x in enumerate(board.board) if x == 0]
+    
+    global available_adj
+    available_adj = []
+
+    for index, item in board.board:
+        if item == board.player:
+            available_adj.append(ADJACENT_MAP[index])
+            
+    print(valid_positions)
+    # Randomly choose a position to place a piece
+    if valid_positions and board.placed_piece == 0:
+        pos = random.choice(valid_positions)
+        board.place_piece(pos)
+        print("aaaaaaaa")
+        print(available_adj)
+        # Check for mill formation and remove a piece if formed
+        if board.is_mill(pos, board.player):
+            board.remove_opponent_piece()
+            
+    # elif valid_positions and
+    
+
+def move_random_piece(board):
+    # Find all possible moves for the computer's pieces
+    valid_moves = [(i, adj) for i in range(len(board.board)) if board.board[i] == board.player
+                for adj in board.adjacent_pos(i) if board.board[adj] == 0]
+
+    # Randomly choose a move
+    if valid_moves:
+        from_pos, to_pos = random.choice(valid_moves)
+        board.move_piece(from_pos, to_pos)
+
+        # Check for mill formation and remove a piece if formed
+        if board.is_mill(to_pos, board.player):
+            board.remove_opponent_piece()
+
+def remove_opponent_piece(board):
+    # Choose a random opponent piece that is not in a mill
+    opponent_pieces = [i for i, x in enumerate(board.board) if x == -board.player]
+    non_mill_opponent_pieces = [p for p in opponent_pieces if not board.is_mill(p, -board.player)]
+    
+    if non_mill_opponent_pieces:
+        piece_to_remove = random.choice(non_mill_opponent_pieces)
+    elif opponent_pieces:
+        piece_to_remove = random.choice(opponent_pieces)
+
+        board.remove_piece(piece_to_remove)
 # Function to draw the game board and status information
 def draw_board(board):
 
@@ -206,6 +280,25 @@ def replay_button(pos):
     else:
         pygame.draw.rect(SCREEN, (255, 0, 0), (30, 340, 100, 50))
         SCREEN.blit(small_text.render("Replaying", True, (0, 0, 0)), (48, 355))
+        
+def forward_button(pos):
+    # if board.forward == False:
+    if 620 + 100 > pos[0] > 620 and 340 + 50 > pos[1] > 340:
+        pygame.draw.rect(SCREEN, (60, 60, 60), (620, 340, 100, 50))
+    else:
+        pygame.draw.rect(SCREEN, (30, 30, 30), (620, 340, 100, 50))
+    SCREEN.blit(small_text.render("Forward", True, (255, 255, 255)), (640, 355))
+        
+def backward_button(pos):
+    if board.forward == False:
+        if 620 + 100 > pos[0] > 620 and 400 + 50 > pos[1] > 400:
+            pygame.draw.rect(SCREEN, (60, 60, 60), (620, 400, 100, 50))
+        else:
+            pygame.draw.rect(SCREEN, (30, 30, 30), (620, 400, 100, 50))
+        SCREEN.blit(small_text.render("Backward", True, (255, 255, 255)), (640, 415))
+    else:
+        pygame.draw.rect(SCREEN, (255, 0, 0), (30, 340, 100, 50))
+        SCREEN.blit(small_text.render("Backward", True, (0, 0, 0)), (635, 415))
 
 # Function to load a page to ask if the user wants to play again
 def play_again(board):
@@ -255,27 +348,28 @@ def play_again(board):
         SCREEN.blit(small_text.render("No", True, (255, 255, 255)), (550, 400))
         pygame.display.update()
 
-# Function to replay the game
-def replaying(board):
-    with open("Records/game_moves_1.txt", "r") as f:
-        moves = f.readlines()
-    for move in moves:
-        move = move.strip('\n').split(' ')
-        if move[0] == 'Place':
-            board.player = int(move[2])
-            board.place_piece(int(move[1]))
-        elif move[0] == 'Move':
-            board.player = int(move[3])
-            board.move_piece(int(move[1]), int(move[2]))
-        elif move[0] == 'Remove':
-            board.remove_piece(int(move[1]))
-        else:
-            print("Invalid move")
-        if board.auto_replay == True:
-            time.sleep(1)
-        else:
-            input("Press any key to continue...")
-        draw_board(board)
+# # Function to replay the game
+# def replaying(board):
+#     with open("Records/game_moves_1.txt", "r") as f:
+#         moves = f.readlines()
+        
+#     for move in moves:
+#         move = move.strip('\n').split(' ')
+#         if move[0] == 'Place':
+#             board.player = int(move[2])
+#             board.place_piece(int(move[1]))
+#         elif move[0] == 'Move':
+#             board.player = int(move[3])
+#             board.move_piece(int(move[1]), int(move[2]))
+#         elif move[0] == 'Remove':
+#             board.remove_piece(int(move[1]))
+#         else:
+#             print("Invalid move")
+#         if board.auto_replay == True:
+#             time.sleep(1)
+#         else:
+#             input("Press any key to continue...")
+#         draw_board(board)
 
 # Function to initiate game settings
 def game_settings():
@@ -632,9 +726,22 @@ def main():
             hvcomputer_button(mouse)
             record_button(mouse)
             replay_button(mouse)
-            if board.player == 0 and (human_mode or computer_mode):
-                black_button(mouse)
-                white_button(mouse)
+            forward_button(mouse)
+            backward_button(mouse)
+            
+            if human_mode:
+                if board.player == 0:
+                    black_button(mouse)
+                    white_button(mouse)
+                
+            # Handle computer move in computer mode
+            elif computer_mode:
+                if board.player == 0:
+                    board.player = COMPUTER
+                if board.player == COMPUTER:
+                    board.computer_move()
+                    board.player = -board.player
+                
 
             # Event handling loop
             for event in pygame.event.get():
@@ -695,11 +802,30 @@ def main():
                         if board.replay == False:
                             board.replay = True
                             board.auto_replay = True
-                            replaying(board)
+                            board.replaying(board)
                         else:
                             board.auto_replay = False
                             board.replay = False
-
+                            
+                    # Check if the "Forward" button is clicked
+                    elif 620 + 100 > mouse[0] > 620 and 340 + 50 > mouse[1] > 340:
+                        if board.replay == False:
+                            board.replay = True
+                            board.auto_replay = False
+                            # replaying(board)
+                        else:
+                            board.auto_replay = False
+                            board.replay = False
+                            
+                    # Check if the "Backward" button is clicked
+                    elif 620 + 100 > mouse[0] > 620 and 340 + 50 > mouse[1] > 340:
+                        if board.forward == False:
+                            board.backward = True
+                            board.backward_replay()
+                            draw_board(board)
+                        else:
+                            board.backward = False
+                            
                     # Check if mouse clicked somewhere other than the available modes
                     elif not human_mode and not computer_mode:
                         continue
