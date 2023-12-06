@@ -161,22 +161,14 @@ class Board:
         counter = 1
         while os.path.exists("Records/game_moves_%s.txt" % counter):
             counter += 1
+            
         while True:
             save =  open(f"Records/game_moves_{counter}.txt", "w")
             for move in self.moves:
                 save.write(move)
             save.close()
+            self.moves =[]
             break
         
-    # List replay files
-    def get_replay_files(directory="Records"):
-        return [f for f in os.listdir(directory) if f.endswith('.txt') and f.startswith("game_moves_")]
-
-    # Replaying the game automatically
-    def replay_automatically(self, delay):
-        filename = self.choose_file()
-        if filename:
-            self.replay_from_file(filename)
-            time.sleep(delay)
 
 
