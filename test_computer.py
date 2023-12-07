@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import patch, MagicMock
 from GUI import ADJACENT_MAP, MILLS, MILL_TRACK, computer_move, place_random_piece, move_random_piece, fly_random_piece, remove_opponent_piece
 from board import Board
-
+import GUI as G
 @pytest.fixture
 def mock_board():
     cord_mock = MagicMock()
@@ -12,13 +12,18 @@ def mock_board():
     board.move_piece = MagicMock()
     board.remove_piece = MagicMock()
     board.is_mill = MagicMock(return_value=True)  # Assuming a mill is formed
+    G.var12 = False
     return board
+
 
 def test_computer_move_place_phase(mock_board):
     mock_board.placed_piece = 10
     with patch('GUI.place_random_piece') as mock_place_random_piece:
+        # Call computer_move without relying on var12
         computer_move(mock_board)
         mock_place_random_piece.assert_called_once_with(mock_board)
+
+
 
 def test_computer_move_move_phase(mock_board):
     mock_board.placed_piece = 18
