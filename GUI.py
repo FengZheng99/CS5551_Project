@@ -86,7 +86,7 @@ def computer_move(board):
         winning = True
         if board.recording == True:
                 board.save_recording()
-                board.save_recording == False
+
 
 def place_random_piece(board):
     # Find all empty positions
@@ -234,7 +234,7 @@ def fly_random_piece(board):
         if to_pos in available_adj:
             adj_moves.append((from_pos, to_pos))
 
-    # Randomly choose a fly, prioritizing mills and adjacents if possible
+    # Randomly choose a fly, prioritizing mills and adjacents if possible 
     if mill_moves:
         from_pos, to_pos = random.choice(mill_moves)
         board.move_piece(from_pos, to_pos)
@@ -511,6 +511,7 @@ def play_again(board):
         SCREEN.blit(small_text.render("No", True, (255, 255, 255)), (550, 400))
         pygame.display.update()
 
+
 # Function to auto replay the game
 def replaying(board):
     
@@ -685,13 +686,11 @@ def mill_rule(board, mouse):
                 winning = True
                 if board.recording == True:
                         board.save_recording()
-                        board.save_recording == False
             elif board.count_piece[0] <= 2:
                 print('111black win')
                 winning = True
                 if board.recording == True:
                         board.save_recording()
-                        board.save_recording == False
 
             # check if adjacent point available, else game over
             if board.has_no_valid_moves():
@@ -703,7 +702,6 @@ def mill_rule(board, mouse):
                     print('11black win')
                 if board.recording == True:
                         board.save_recording()
-                        board.save_recording == False
     print(board.board)
 
 # Function to handle the game rule of black flying
@@ -815,7 +813,6 @@ def place_piece_rule(board, mouse):
                         print('1black win')
                     if board.recording == True:
                         board.save_recording()
-                        board.save_recording == False
 
                 # Switch to move_piece stage
                 place_piece_stage = False
@@ -883,7 +880,6 @@ def move_piece_rule(board, mouse):
                         print('black win')
                     if board.recording == True:
                         board.save_recording()
-                        board.save_recording == False
     print(board.board)
 
 # Main Function
@@ -1001,6 +997,7 @@ def main():
                     elif 30 + 100 > mouse[0] > 30 and 400 + 50 > mouse[1] > 400:
                         if board.recording == False:
                             board.recording = True
+
                         else:
                             board.recording = False
 
