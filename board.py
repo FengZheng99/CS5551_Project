@@ -90,7 +90,6 @@ class Board:
 
     #  Remove a man from the board if a mill condition is met
     def remove_piece(self, pos):
-
         self.board[pos] = 0
         self.count_piece[0 if self.player == BLACK else 1] -= 1
         self.moves.append(f"Remove {pos}\n")
@@ -158,6 +157,11 @@ class Board:
 
     # Save the game moves to a file
     def save_recording(self):
+        # Check if there are no moves to save
+        if not self.moves:
+            print("No moves to record.")
+            return
+        
         counter = 1
         while os.path.exists("Records/game_moves_%s.txt" % counter):
             counter += 1
