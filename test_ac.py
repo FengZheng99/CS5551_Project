@@ -25,6 +25,7 @@ class TestACs:
     def test_change_turn(self):
         board = Board(CORD, MILL_TRACK)
         board.player = 1
+        board.var12 = False
         board.change_turn()
         assert board.player == -1
 
@@ -32,6 +33,8 @@ class TestACs:
         board = Board(CORD, MILL_TRACK)
         board.board = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         board.player = 1
+        board.var12 = False
+        G.var12 = False
         mouse = (200, 50)
         G.place_piece_rule(board, mouse)
         assert board.board[0] == 1
@@ -40,6 +43,7 @@ class TestACs:
         board = Board(CORD, MILL_TRACK)
         board.board = [-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         board.player = 1
+        G.var12 = False
         mouse = (200, 50)
         G.place_piece_rule(board, mouse)
         assert board.board[0] == -1
@@ -48,6 +52,7 @@ class TestACs:
         board = Board(CORD, MILL_TRACK)
         board.board = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         board.player = 1
+        G.var12 = False
         global move_from
         move_from = None
         mouse = (200, 50)
@@ -60,6 +65,7 @@ class TestACs:
         board = Board(CORD, MILL_TRACK)
         board.board = [1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         board.player = 1
+        G.var12 = False
         global move_from
         move_from = None
         mouse = (200, 50)
@@ -72,6 +78,7 @@ class TestACs:
         board = Board(CORD, MILL_TRACK)
         board.board = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         board.player = 1
+        G.var12 = False
         global move_from
         move_from = None
         mouse = (200, 50)
@@ -84,6 +91,7 @@ class TestACs:
         board = Board(CORD, MILL_TRACK)
         board.board = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1]
         board.player = 1
+        G.var12 = False
         global move_from
         move_from = None
         mouse = (200, 50)
@@ -96,6 +104,7 @@ class TestACs:
         board = Board(CORD, MILL_TRACK)
         board.board = [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1]
         board.player = 1
+        G.var12 = False
         board.mill_list(1)
         mouse = (600, 450)
         G.mill_rule(board, mouse)
@@ -105,6 +114,7 @@ class TestACs:
         board = Board(CORD, MILL_TRACK)
         board.board = [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -1, -1]
         board.player = 1
+        G.var12 = False
         board.mill_list(1)
         board.mill_list(-1)
         mouse = (600, 450)
@@ -115,6 +125,7 @@ class TestACs:
         board = Board(CORD, MILL_TRACK)
         board.board = [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -1]
         board.player = 1
+        G.var12 = False
         board.mill_list(1)
         board.mill_list(-1)
         mouse = (600, 450)

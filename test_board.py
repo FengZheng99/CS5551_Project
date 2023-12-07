@@ -2,8 +2,8 @@ import os
 from unittest.mock import MagicMock, call, mock_open, patch
 
 import pytest
-
-from board import ADJACENT_MAP, BLACK, MILL_MAP, MILLS, WHITE, Board
+from board import (ADJACENT_MAP, BLACK, INITIAL_PIECES, MILL_MAP, MILLS, WHITE, Board)
+import GUI
 
 
 class TestBoard:
@@ -87,3 +87,43 @@ class TestBoard:
         board.game_over()
         # Assert that the close method was called on the mock_move_file
         mock_move_file.close.assert_called_once()
+        
+    def test_reset(self):
+        board = Board("dummy_cord", "dummy_mill_track")
+        board.reset()
+        assert board.board == [0] * len(board.cord)
+        assert board.player == 0
+        assert board.placed_piece == 0
+        assert board.count_piece == [INITIAL_PIECES, INITIAL_PIECES]
+
+    def test_place_piece(self):
+        board = Board("dummy_cord", "dummy_mill_track")
+        board.player = BLACK
+        board.place_piece(5)
+        assert board.board[5] == BLACK
+        assert board.placed_piece == 1
+
+    def test_move_piece(self):
+        board = Board("dummy_cord", "dummy_mill_track")
+        board.player = WHITE
+        board.place_piece(3)
+        board.move_piece(3, 5)
+        assert board.board[3] == 0
+        assert board.board[5] == WHITE
+
+    def test_remove_piece(self):
+        board = Board("dummy_cord", "dummy_mill_track")
+        board.player = WHITE
+        board.place_piece(2)
+        board.remove_piece(2)
+        assert board.board[2] == 0
+        assert board.count_piece[1] == INITIAL_PIECES - 1
+
+    def test_is_mill(self):
+        board = Board("dummy_cord", "dummy_mill_track")
+        board.player = BLACK
+        board.place_piece(0)
+        board.place_piece(1)
+        assert not board.is_mill(0, BLACK)
+        board.place_piece(2)
+        assert board.is_mill(0, BLACK)
