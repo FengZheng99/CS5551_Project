@@ -8,6 +8,17 @@ WHITE = -1
 INITIAL_PIECES = 9
 
 # Mill combinations and adjacent points for each points map
+MILL_MAP12 = {
+            0: [[1, 2], [3, 6], [9, 21]], 1: [[0, 2], [4, 7]], 2: [[0, 1], [5, 8], [14, 23]],
+            3: [[0, 6], [4, 5], [10, 18]], 4: [[3, 5], [1, 7]], 5: [[2, 8], [3, 4], [13, 20]],
+            6: [[0, 3], [7, 8], [11, 15]], 7: [[6, 8], [1, 4]], 8: [[2, 5], [6, 7], [12, 17]],
+            9: [[10, 11], [0, 21]], 10: [[9, 11], [3, 18]], 11: [[9, 10], [6, 15]],
+            12: [[13, 14], [8, 17]], 13: [[12, 14], [5, 20]], 14: [[12, 13], [2, 23]],
+            15: [[18, 21], [16, 17], [6, 11]], 16: [[15, 17], [19, 22]], 17: [[20, 23], [15, 16], [8, 12]],
+            18: [[15, 21], [19, 20], [3, 10]], 19: [[18, 20], [16, 22]], 20: [[17, 23], [18, 19], [5, 13]],
+            21: [[15, 18], [22, 23], [0, 9]], 22: [[21, 23], [16, 19]], 23: [[17, 20], [21, 22], [2, 14]]
+}
+
 MILL_MAP = {
             0: [[1, 2], [9, 21]], 1: [[0, 2], [4, 7]], 2: [[0, 1], [14, 23]],
             3: [[4, 5], [10, 18]], 4: [[3, 5], [1, 7]], 5: [[3, 4], [13, 20]],
@@ -17,7 +28,7 @@ MILL_MAP = {
             15: [[16, 17], [6, 11]], 16: [[15, 17], [19, 22]], 17: [[15, 16], [8, 12]],
             18: [[19, 20], [3, 10]], 19: [[18, 20], [16, 22]], 20: [[18, 19], [5, 13]],
             21: [[22, 23], [0, 9]], 22: [[21, 23], [16, 19]], 23: [[21, 22], [2, 14]]
-        }
+}
 
 ADJACENT_MAP = {
             0: [1, 9], 1: [0, 2, 4], 2: [1, 14],
@@ -30,11 +41,30 @@ ADJACENT_MAP = {
             21: [9, 22], 22: [19, 21, 23], 23: [14, 22],
         }
 
+ADJACENT_MAP12 = {
+            0: [1, 3, 9], 1: [0, 2, 4], 2: [1, 5, 14],
+            3: [1, 4, 6, 10], 4: [1, 3, 5, 7], 5: [2, 4, 8, 13],
+            6: [3, 7, 11], 7: [4, 6, 8], 8: [5, 7, 12],
+            9: [0, 10, 21], 10: [3, 9, 11, 18], 11: [6, 10, 15],
+            12: [8, 13, 17], 13: [5, 12, 14, 20], 14: [2, 13, 23],
+            15: [11, 16, 18], 16: [15, 17, 19], 17: [12, 16, 20],
+            18: [10, 15, 19, 21], 19: [16, 18, 20, 22], 20: [13, 17, 19, 23],
+            21: [9, 18, 22], 22: [19, 21, 23], 23: [14, 20, 22],
+        }
+
 MILLS = {
             'm1': [0, 1, 2], 'm2': [3, 4, 5], 'm3': [6, 7, 8], 'm4': [9, 10, 11],
             'm5': [12, 13, 14], 'm6': [15, 16, 17], 'm7': [18, 19, 20], 'm8': [21, 22, 23],
             'm9': [0, 9, 21], 'm10': [3, 10, 18], 'm11': [6, 11, 15], 'm12': [1, 4, 7],
             'm13': [16, 19, 22], 'm14': [8, 12, 17], 'm15': [5, 13, 20], 'm16': [2, 14, 23]
+        }
+
+MILLS12 = {
+            'm1': [0, 1, 2], 'm2': [3, 4, 5], 'm3': [6, 7, 8], 'm4': [9, 10, 11],
+            'm5': [12, 13, 14], 'm6': [15, 16, 17], 'm7': [18, 19, 20], 'm8': [21, 22, 23],
+            'm9': [0, 9, 21], 'm10': [3, 10, 18], 'm11': [6, 11, 15], 'm12': [1, 4, 7],
+            'm13': [16, 19, 22], 'm14': [8, 12, 17], 'm15': [5, 13, 20], 'm16': [2, 14, 23],
+            'm17': [0, 3, 6], 'm18': [2, 5, 8], 'm19': [15, 18, 21], 'm20': [17, 20, 23]
         }
 
 # Board class to represent the game board
@@ -57,24 +87,39 @@ class Board:
         self.backward = False
         self.replay_moves = [] # List to store the moves for replay
         self.current_replay_index = 0  # Index to track the current move in the replay
+        self.var12 = False # indicator of the 12 men morris variation
     
     # Switch the turn to the other player
     def change_turn(self):
         self.player *= -1
+
+    def var(self):
+        self.count_piece = [12, 12] # Number of men remaining for each player
+        self.var12 = True
 
     # Reset the board to its initial state
     def reset(self):
         self.board = [0] * len(self.cord)
         self.player = 0
         self.placed_piece = 0
-        self.count_piece = [INITIAL_PIECES, INITIAL_PIECES]
         self.count_current_piece = [0, 0]
-        self.mill_track = {
-            'm1': 0, 'm2': 0, 'm3': 0, 'm4': 0,
-            'm5': 0, 'm6': 0, 'm7': 0, 'm8': 0,
-            'm9': 0, 'm10': 0, 'm11': 0, 'm12': 0,
-            'm13': 0, 'm14': 0, 'm15': 0, 'm16': 0
-        }
+        if self.var12:
+            self.count_piece = [12, 12]
+            self.mill_track = {
+                    'm1': 0, 'm2': 0, 'm3': 0, 'm4': 0,
+                    'm5': 0, 'm6': 0, 'm7': 0, 'm8': 0,
+                    'm9': 0, 'm10': 0, 'm11': 0, 'm12': 0,
+                    'm13': 0, 'm14': 0, 'm15': 0, 'm16': 0,
+                    'm17': 0, 'm18': 0, 'm19': 0, 'm20': 0
+            }
+        else:
+            self.count_piece = [INITIAL_PIECES, INITIAL_PIECES]
+            self.mill_track = {
+                'm1': 0, 'm2': 0, 'm3': 0, 'm4': 0,
+                'm5': 0, 'm6': 0, 'm7': 0, 'm8': 0,
+                'm9': 0, 'm10': 0, 'm11': 0, 'm12': 0,
+                'm13': 0, 'm14': 0, 'm15': 0, 'm16': 0
+            }
 
     # Place a man at the given position on the board
     def place_piece(self, pos):
@@ -97,14 +142,24 @@ class Board:
     # Check if a mill condition is met at the given index for player 'p'
     def is_mill(self, index, p):
         # Checks if a mill condition is met at the given index for player 'p'
-        for mill_indices in MILL_MAP[index]:
+        if self.var12:
+            MILL = MILL_MAP12
+        else:
+            MILL = MILL_MAP
+
+        for mill_indices in MILL[index]:
             if all(self.board[i] == p for i in mill_indices):
                 return True
         return False
 
     # keeping track of mills thoughout the game
     def mill_list(self, p):
-        for mill, positions in MILLS.items():
+        if self.var12:
+            MILL = MILLS12
+        else:
+            MILL = MILLS
+
+        for mill, positions in MILL.items():
             if all(self.board[pos] == p for pos in positions):
                 self.mill_track[mill] = p
             elif all(self.board[pos] == -p for pos in positions):
@@ -115,7 +170,12 @@ class Board:
 
     # Return the positions adjacent to the given position 'pos'
     def adjacent_pos(self, pos):
-        return ADJACENT_MAP[pos]
+        if self.var12:
+            adj = ADJACENT_MAP12
+        else:
+            adj = ADJACENT_MAP
+
+        return adj[pos]
 
     # Check if there are no valid adjacent points to move to for the current player
     def has_no_valid_moves(self):
@@ -174,5 +234,3 @@ class Board:
             self.moves =[]
             break
         
-
-

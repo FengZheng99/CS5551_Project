@@ -34,6 +34,14 @@ MILL_TRACK = {
         'm13': 0, 'm14': 0, 'm15': 0, 'm16': 0
 }
 
+MILL_TRACK12 = {
+        'm1': 0, 'm2': 0, 'm3': 0, 'm4': 0,
+        'm5': 0, 'm6': 0, 'm7': 0, 'm8': 0,
+        'm9': 0, 'm10': 0, 'm11': 0, 'm12': 0,
+        'm13': 0, 'm14': 0, 'm15': 0, 'm16': 0,
+        'm17': 0, 'm18': 0, 'm19': 0, 'm20': 0
+}
+
 ADJACENT_MAP = {
             0: [1, 9], 1: [0, 2, 4], 2: [1, 14],
             3: [4, 10], 4: [1, 3, 5, 7], 5: [4, 13],
@@ -45,12 +53,32 @@ ADJACENT_MAP = {
             21: [9, 22], 22: [19, 21, 23], 23: [14, 22],
         }
 
+ADJACENT_MAP12 = {
+            0: [1, 3, 9], 1: [0, 2, 4], 2: [1, 5, 14],
+            3: [1, 4, 6, 10], 4: [1, 3, 5, 7], 5: [2, 4, 8, 13],
+            6: [3, 7, 11], 7: [4, 6, 8], 8: [5, 7, 12],
+            9: [0, 10, 21], 10: [3, 9, 11, 18], 11: [6, 10, 15],
+            12: [8, 13, 17], 13: [5, 12, 14, 20], 14: [2, 13, 23],
+            15: [11, 16, 18], 16: [15, 17, 19], 17: [12, 16, 20],
+            18: [10, 15, 19, 21], 19: [16, 18, 20, 22], 20: [13, 17, 19, 23],
+            21: [9, 18, 22], 22: [19, 21, 23], 23: [14, 20, 22],
+        }
+
 MILLS = {
             'm1': [0, 1, 2], 'm2': [3, 4, 5], 'm3': [6, 7, 8], 'm4': [9, 10, 11],
             'm5': [12, 13, 14], 'm6': [15, 16, 17], 'm7': [18, 19, 20], 'm8': [21, 22, 23],
             'm9': [0, 9, 21], 'm10': [3, 10, 18], 'm11': [6, 11, 15], 'm12': [1, 4, 7],
             'm13': [16, 19, 22], 'm14': [8, 12, 17], 'm15': [5, 13, 20], 'm16': [2, 14, 23]
         }
+
+MILLS12 = {
+            'm1': [0, 1, 2], 'm2': [3, 4, 5], 'm3': [6, 7, 8], 'm4': [9, 10, 11],
+            'm5': [12, 13, 14], 'm6': [15, 16, 17], 'm7': [18, 19, 20], 'm8': [21, 22, 23],
+            'm9': [0, 9, 21], 'm10': [3, 10, 18], 'm11': [6, 11, 15], 'm12': [1, 4, 7],
+            'm13': [16, 19, 22], 'm14': [8, 12, 17], 'm15': [5, 13, 20], 'm16': [2, 14, 23],
+            'm17': [0, 3, 6], 'm18': [2, 5, 8], 'm19': [15, 18, 21], 'm20': [17, 20, 23]
+        }
+
 
 # Initiate the pygame window
 SCREEN = pygame.display.set_mode([900, 500])
@@ -69,8 +97,15 @@ current_move_index = 0  # Variable to track the current move
 def computer_move(board):
     global winning
 
+    global var12
+
+    if var12:
+        max_men = 24
+    else:
+        max_men = 18
+
     # Phase 1: Placing pieces
-    if board.placed_piece < 18:
+    if board.placed_piece < max_men:
         place_random_piece(board)
 
     # Phase 2: Moving pieces
@@ -84,9 +119,9 @@ def computer_move(board):
     if board.count_piece[0] <= 2:
         print('111black win')
         winning = True
+        var12 = False
         if board.recording == True:
                 board.save_recording()
-
 
 def place_random_piece(board):
     # Find all empty positions
@@ -95,9 +130,18 @@ def place_random_piece(board):
     global available_adj
     available_adj = []
 
+    global var12
+
+    if var12:
+        adj = ADJACENT_MAP12
+        mil = MILLS12
+    else:
+        adj = ADJACENT_MAP
+        mil = MILLS
+
     for index, item in enumerate(board.board):
         if item == board.player:
-            for a in ADJACENT_MAP[index]:
+            for a in adj[index]:
                 if board.board[a] == 0:
                     available_adj.append(a)
 
@@ -105,7 +149,7 @@ def place_random_piece(board):
     available_mill = []
 
     for index in available_adj:
-        for mill_key, mill_value in MILLS.items():
+        for mill_key, mill_value in mil.items():
             if index in mill_value:
                 if (board.board[mill_value[0]] + board.board[mill_value[1]] + board.board[mill_value[2]]) == 2:
                     available_mill.append(index)
@@ -150,9 +194,18 @@ def move_random_piece(board):
     global available_adj
     available_adj = []
 
+    global var12
+
+    if var12:
+        adj = ADJACENT_MAP12
+        mil = MILLS12
+    else:
+        adj = ADJACENT_MAP
+        mil = MILLS
+
     for index, item in enumerate(board.board):
         if item == board.player:
-            for a in ADJACENT_MAP[index]:
+            for a in adj[index]:
                 if board.board[a] == 0:
                     available_adj.append(a)
 
@@ -160,7 +213,7 @@ def move_random_piece(board):
     available_mill = []
 
     for index in available_adj:
-        for mill_key, mill_value in MILLS.items():
+        for mill_key, mill_value in mil.items():
             if index in mill_value:
                 if (board.board[mill_value[0]] + board.board[mill_value[1]] + board.board[mill_value[2]]) == 2:
                     available_mill.append(index)
@@ -169,7 +222,7 @@ def move_random_piece(board):
     adj_moves = []
 
     for from_pos, to_pos in valid_moves:
-        for mill_key, mill_value in MILLS.items():
+        for mill_key, mill_value in mil.items():
             if to_pos in available_mill and to_pos in mill_value and from_pos not in mill_value:
                 mill_moves.append((from_pos, to_pos))
         if to_pos in available_adj:
@@ -200,7 +253,6 @@ def move_random_piece(board):
         if board.is_mill(to_pos, board.player):
             remove_opponent_piece(board)
 
-
 def fly_random_piece(board):
     # Find all possible flies for the computer's pieces
     valid_moves = [(i, adj) for i in range(len(board.board)) if board.board[i] == board.player
@@ -209,9 +261,18 @@ def fly_random_piece(board):
     global available_adj
     available_adj = []
 
+    global var12
+
+    if var12:
+        adj = ADJACENT_MAP12
+        mil = MILLS12
+    else:
+        adj = ADJACENT_MAP
+        mil = MILLS
+
     for index, item in enumerate(board.board):
         if item == board.player:
-            for a in ADJACENT_MAP[index]:
+            for a in adj[index]:
                 if board.board[a] == 0:
                     available_adj.append(a)
 
@@ -219,7 +280,7 @@ def fly_random_piece(board):
     available_mill = []
 
     for index in available_adj:
-        for mill_key, mill_value in MILLS.items():
+        for mill_key, mill_value in mil.items():
             if index in mill_value:
                 if (board.board[mill_value[0]] + board.board[mill_value[1]] + board.board[mill_value[2]]) == 2:
                     available_mill.append(index)
@@ -228,7 +289,7 @@ def fly_random_piece(board):
     adj_moves = []
 
     for from_pos, to_pos in valid_moves:
-        for mill_key, mill_value in MILLS.items():
+        for mill_key, mill_value in mil.items():
             if to_pos in available_mill and to_pos in mill_value and from_pos not in mill_value:
                 mill_moves.append((from_pos, to_pos))
         if to_pos in available_adj:
@@ -259,15 +320,23 @@ def fly_random_piece(board):
         if board.is_mill(to_pos, board.player):
             remove_opponent_piece(board)
 
-
 def remove_opponent_piece(board):
     # Choose a random opponent piece that is not in a mill
 
     global non_removeble
     non_removeble = []
 
-    for mill_key, mill_value in MILLS.items():
-        if MILL_TRACK[mill_key] == board.player * -1:
+    global var12
+
+    if var12:
+        mil_t = MILL_TRACK12
+        mil = MILLS12
+    else:
+        mil_t = MILL_TRACK
+        mil = MILLS
+
+    for mill_key, mill_value in mil.items():
+        if mil_t[mill_key] == board.player * -1:
             for pos in mill_value:
                 non_removeble.append(pos)
 
@@ -408,6 +477,14 @@ def hvcomputer_button(pos):
         pygame.draw.rect(SCREEN, (30, 30, 30), (20, 120, 140, 50))
     SCREEN.blit(small_text.render("Vs Computer", True, (255, 255, 255)), (50, 135))
 
+# Function to draw the button for 12 men morris mode
+def var12_button(pos):
+    if 20 + 140 > pos[0] > 20 and 200 + 50 > pos[1] > 200:
+        pygame.draw.rect(SCREEN, (60, 60, 60), (20, 200, 140, 50))
+    else:
+        pygame.draw.rect(SCREEN, (30, 30, 30), (20, 200, 140, 50))
+    SCREEN.blit(small_text.render("12 Men Morris", True, (255, 255, 255)), (50, 215))
+
 # Function to draw the button for selecting to play black
 def black_button(pos):
     if 620 + 100 > pos[0] > 620 and 50 + 50 > pos[1] > 50:
@@ -436,7 +513,6 @@ def record_button(pos):
         pygame.draw.rect(SCREEN, (255, 0, 0), (30, 400, 100, 50))
         SCREEN.blit(small_text.render("Recording", True, (0, 0, 0)), (48, 415))
         
-
 # Replay button
 def replay_button(pos):
     if board.replay == False:
@@ -466,6 +542,7 @@ def backward_button(pos):
 # Function to load a page to ask if the user wants to play again
 def play_again(board):
     board.save_recording()
+    global var12
     again = True
     while again:
 
@@ -486,6 +563,7 @@ def play_again(board):
                 # Click 'Yes' to play again
                 if 270 + 90 > mouse[0] > 270 and 385 + 50 > mouse[1] > 385:
                     board.reset()
+                    var12 = False
                     return False
                 # Click 'No' to quit the game
                 elif 515 + 90 > mouse[0] > 515 and 385 + 50 > mouse[1] > 385:
@@ -511,7 +589,6 @@ def play_again(board):
         SCREEN.blit(small_text.render("No", True, (255, 255, 255)), (550, 400))
         pygame.display.update()
 
-
 # Function to auto replay the game
 def replaying(board):
     
@@ -536,7 +613,7 @@ def replaying(board):
         else:
             print("Invalid move")
         if board.auto_replay == True:
-            time.sleep(1)
+            time.sleep(0.4)
             
         draw_board(board)
         
@@ -588,7 +665,10 @@ def game_settings():
     global black_flying
     global white_flying
     global MILL_TRACK
+    global MILL_TRACK12
+    global var12
 
+    var12 = False
     move_from = None
     human_mode = False
     computer_mode = False
@@ -603,6 +683,13 @@ def game_settings():
         'm9': 0, 'm10': 0, 'm11': 0, 'm12': 0,
         'm13': 0, 'm14': 0, 'm15': 0, 'm16': 0
     }
+    MILL_TRACK12 = {
+        'm1': 0, 'm2': 0, 'm3': 0, 'm4': 0,
+        'm5': 0, 'm6': 0, 'm7': 0, 'm8': 0,
+        'm9': 0, 'm10': 0, 'm11': 0, 'm12': 0,
+        'm13': 0, 'm14': 0, 'm15': 0, 'm16': 0,
+        'm17': 0, 'm18': 0, 'm19': 0, 'm20': 0
+}
 
 # Function to initiate game settings
 def hvh_settings(board):
@@ -644,19 +731,30 @@ def hvc_settings(board):
 def mill_rule(board, mouse):
 
     global MILL_TRACK
+    global MILL_TRACK12
     global mill
     global finish
     global winning
     global black_flying
     global white_flying
+    global var12
+
+    milltrack = {}
+    mills = {}
+    if var12:
+        milltrack = MILL_TRACK12
+        mills = MILLS12
+    else:
+        milltrack = MILL_TRACK
+        mills = MILLS
 
     for i, c in enumerate(CORD):
 
         global non_removeble
         non_removeble = []
 
-        for mill_key, mill_value in MILLS.items():
-            if MILL_TRACK[mill_key] == board.player * -1:
+        for mill_key, mill_value in mills.items():
+            if milltrack[mill_key] == board.player * -1:
                 for pos in mill_value:
                     non_removeble.append(pos)
 
@@ -670,7 +768,7 @@ def mill_rule(board, mouse):
         if board.clickable(c, mouse, CIRCLE_SIZE) and board.board[i] == board.player * -1 and ((i not in non_removeble) or all(map(lambda x: x in non_removeble, current_players_men))):
 
             board.remove_piece(i)
-            MILL_TRACK = board.mill_list(board.player)
+            milltrack = board.mill_list(board.player)
             mill = False
             board.change_turn()
 
@@ -684,11 +782,13 @@ def mill_rule(board, mouse):
             if board.count_piece[1] <= 2:
                 print('111white win')
                 winning = True
+                var12 = False
                 if board.recording == True:
                         board.save_recording()
             elif board.count_piece[0] <= 2:
                 print('111black win')
                 winning = True
+                var12 = False
                 if board.recording == True:
                         board.save_recording()
 
@@ -696,6 +796,7 @@ def mill_rule(board, mouse):
             if board.has_no_valid_moves():
 
                 winning = True
+                var12 = False
                 if board.player == 1:
                     print('11white win')
                 else:
@@ -704,12 +805,24 @@ def mill_rule(board, mouse):
                         board.save_recording()
     print(board.board)
 
+    if var12:
+        MILL_TRACK12 = milltrack
+    else:
+        MILL_TRACK = milltrack
+
 # Function to handle the game rule of black flying
 def black_fly_rule(board, mouse):
 
     global MILL_TRACK
+    global MILL_TRACK12
     global mill
     global move_from
+
+    milltrack = {}
+    if var12:
+        milltrack = MILL_TRACK12
+    else:
+        milltrack = MILL_TRACK
 
     # Fly from
     if move_from is None:
@@ -735,20 +848,32 @@ def black_fly_rule(board, mouse):
                 if board.is_mill(i, board.player):
                     mill = True
                     move_from = None
-                    MILL_TRACK = board.mill_list(board.player)
+                    milltrack = board.mill_list(board.player)
                     break
 
                 # Change turn
                 move_from = None
                 board.change_turn()
     print(board.board)
+
+    if var12:
+        MILL_TRACK12 = milltrack
+    else:
+        MILL_TRACK = milltrack
 
 # Function to handle the game rule of white flying
 def white_fly_rule(board, mouse):
     
     global MILL_TRACK
+    global MILL_TRACK12
     global mill
     global move_from
+
+    milltrack = {}
+    if var12:
+        milltrack = MILL_TRACK12
+    else:
+        milltrack = MILL_TRACK
     
     # Fly from
     if move_from is None:
@@ -774,13 +899,18 @@ def white_fly_rule(board, mouse):
                 if board.is_mill(i, board.player):
                     mill = True
                     move_from = None
-                    MILL_TRACK = board.mill_list(board.player)
+                    milltrack = board.mill_list(board.player)
                     break
 
                 # Change turn
                 move_from = None
                 board.change_turn()
     print(board.board)
+
+    if var12:
+        MILL_TRACK12 = milltrack
+    else:
+        MILL_TRACK = milltrack
 
 # Function to implement rules of piece placing
 def place_piece_rule(board, mouse):
@@ -789,7 +919,17 @@ def place_piece_rule(board, mouse):
     global place_piece_stage
     global mill
     global MILL_TRACK
+    global MILL_TRACK12
     global winning
+    global var12
+
+    milltrack = {}
+    if var12:
+        milltrack = MILL_TRACK12
+        max_men = 24
+    else:
+        milltrack = MILL_TRACK
+        max_men = 18
 
     for i, c in enumerate(CORD):
                         
@@ -802,11 +942,12 @@ def place_piece_rule(board, mouse):
             board.place_piece(i)
             print(board.board)
             # Check if all men is placed
-            if board.placed_piece == 18:
+            if board.placed_piece == max_men:
 
                 # If no adjacent points to move, game over
                 if board.has_no_valid_moves():
                     winning = True
+                    var12 = False
                     if board.player == 1:
                         print('1white win')
                     else:
@@ -821,11 +962,16 @@ def place_piece_rule(board, mouse):
             # Check if form a mill
             if board.is_mill(i, board.player):
                 mill = True
-                MILL_TRACK = board.mill_list(board.player)
+                milltrack = board.mill_list(board.player)
                 break
 
             # Change turn
             board.change_turn()
+
+    if var12:
+        MILL_TRACK12 = milltrack
+    else:
+        MILL_TRACK = milltrack
 
 # Function to implement rules of piece moving
 def move_piece_rule(board, mouse):
@@ -833,7 +979,15 @@ def move_piece_rule(board, mouse):
     global winning
     global mill
     global MILL_TRACK
+    global MILL_TRACK12
     global move_from
+    global var12
+
+    milltrack = {}
+    if var12:
+        milltrack = MILL_TRACK12
+    else:
+        milltrack = MILL_TRACK
 
     # Move from
     if move_from is None:
@@ -864,7 +1018,7 @@ def move_piece_rule(board, mouse):
                 if board.is_mill(i, board.player):
                     mill = True
                     move_from = None
-                    MILL_TRACK = board.mill_list(board.player)
+                    milltrack = board.mill_list(board.player)
                     break
 
                 # Change turn
@@ -874,6 +1028,7 @@ def move_piece_rule(board, mouse):
                 # Check if no adjacent points, game over
                 if board.has_no_valid_moves():
                     winning = True
+                    var12 = False
                     if board.player == 1:
                         print('white win')
                     else:
@@ -881,6 +1036,11 @@ def move_piece_rule(board, mouse):
                     if board.recording == True:
                         board.save_recording()
     print(board.board)
+
+    if var12:
+        MILL_TRACK12 = milltrack
+    else:
+        MILL_TRACK = milltrack
 
 # Main Function
 def main():
@@ -894,6 +1054,7 @@ def main():
     global black_flying
     global white_flying
     global MILL_TRACK
+    global MILL_TRACK12
     global finish
     global winning
     global move_from
@@ -908,11 +1069,15 @@ def main():
 
     # Load board image
     board_Img = pygame.image.load('board.png')
+    board_Img12 = pygame.image.load('Twelve_Men_s_Morris_board.png')
 
     # Main game loop
     finish = False
     winning = False
     starting_player = 0
+
+    global var12
+    var12 = False
 
     while not finish:
         # Initiate game settings
@@ -926,10 +1091,14 @@ def main():
 
             # Fill the background, board image, and buttons
             SCREEN.fill((255, 193, 37))
-            SCREEN.blit(board_Img, (150, 0))
+            if var12:
+                SCREEN.blit(board_Img12, (150, 0))
+            else:
+                SCREEN.blit(board_Img, (150, 0))
             end_button(mouse)
             hvh_button(mouse)
             hvcomputer_button(mouse)
+            var12_button(mouse)
             record_button(mouse)
             replay_button(mouse)
             forward_button(mouse)
@@ -965,6 +1134,7 @@ def main():
                         human_mode = False
                         computer_mode = False
                         board.reset()
+                        var12 = False
 
                 # Handle mouse click events
                 elif event.type == pygame.MOUSEBUTTONUP:
@@ -972,16 +1142,33 @@ def main():
                     # Check if a button is clicked to start the game in a winning state
                     if 20 + 30 > mouse[0] > 20 and 10 + 30 > mouse[1] > 10:
                         winning = True
-                        board.player = 0
-                        
+                        var12 = False
+                        board.player = 0    
                         
                     # Check if the human vs human button is clicked
                     elif 20 + 140 > mouse[0] > 20 and 50 + 50 > mouse[1] > 50:
                         hvh_settings(board)
+                        print(var12)
 
                     # Check if the human vs computer button is clicked
                     elif 20 + 140 > mouse[0] > 20 and 120 + 50 > mouse[1] > 120:
                         hvc_settings(board)
+                        print(var12)
+
+                    # Check if the 12 men morris button is clicked
+                    elif 20 + 140 > mouse[0] > 20 and 200 + 50 > mouse[1] > 200:
+                        if var12:
+                            var12 = False
+                            board.var12 = False
+                            board = Board(CORD, MILL_TRACK)
+                            
+                        else:
+                            var12 = True
+                            board.var12 = True
+                            board = Board(CORD, MILL_TRACK12)
+                            board.var()
+
+                        print(var12)
 
                     # Check if the "Black" button is clicked
                     elif 620 + 100 > mouse[0] > 620 and 50 + 50 > mouse[1] > 50 and board.player == 0:
@@ -1060,6 +1247,8 @@ def main():
 
         # Check if the user wants to play again
         winning = play_again(board)
+        var12 = False
+        board = Board(CORD, MILL_TRACK)
 
 if __name__ == "__main__":
     pygame.init()
