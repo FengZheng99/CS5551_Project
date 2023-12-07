@@ -1,0 +1,40 @@
+Place 6 1
+Place 10 -1
+Place 8 1
+Place 20 -1
+Place 15 1
+Place 18 -1
+Place 11 1
+Remove 18
+Place 19 -1
+Place 17 1
+Place 5 -1
+Place 16 1
+Remove 10
+Place 3 -1
+Place 12 1
+Remove 5
+Place 4 -1
+Place 7 1
+Remove 3
+Place 10 -1
+Place 3 1
+Place 18 -1
+Remove 3
+Move 12 13 1
+Move 4 3 -1
+Remove 13
+Move 7 4 1
+Move 20 13 -1
+Move 4 7 1
+Remove 13
+Move 19 20 -1
+Move 7 4 1
+Move 18 19 -1
+Move 4 7 1
+Remove 10
+Move 19 4 -1
+Move 16 19 1
+Move 20 13 -1
+Move 19 16 1
+Remove 4

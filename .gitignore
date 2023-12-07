@@ -5,6 +5,7 @@ __pycache__/
 # Record moves
 Records/*
 !Records/.gitkeep
+!Records/game_moves_test.txt
 
 # Misc
 .DS_Store
