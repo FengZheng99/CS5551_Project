@@ -31,6 +31,12 @@ def mock_filesystem(monkeypatch):
     monkeypatch.setattr(os, 'listdir', mock_listdir)
     monkeypatch.setattr('builtins.open', mock_open)
 
+def load_replay_moves(filename):
+    directory = "Records/"
+    with open(os.path.join(directory, filename), 'r') as f:
+        return [line.strip('\n').split(' ') for line in f.readlines()]
+
+
 # Test replaying
 def test_replaying(mock_board, mock_filesystem):
     replaying(mock_board)
@@ -83,7 +89,7 @@ def test_load_replay_moves():
         ['Remove', '4']
     ]
 
-    actual_moves = load_replay_moves('game_moves_test.txt')
+    actual_moves = load_replay_moves('game_moves_0.txt')
     # Verify that the function returns the correct data
     assert actual_moves == expected_moves
 
